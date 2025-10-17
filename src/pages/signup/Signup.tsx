@@ -11,45 +11,45 @@ const Signup: React.FC = () => {
 
   // Estado del formulario
   const [formData, setFormData] = useState<RegisterData>({
-    nombre: '',
-    apellidos: '',
-    edad: 0,
+    firstName: '',
+    lastName: '',
+    age: 0,
     email: '',
     password: '',
   });
 
-  // Estado para mensajes
-  const [message, setMessage] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  // Mensajes
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  // Maneja cambios en los campos
+  // Maneja los cambios de los campos
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === 'edad' ? Number(value) : value,
-    });
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === 'age'
+          ? value === '' ? 0 : parseInt(value, 10) || 0 // ✅ siempre número
+          : value,
+    }));
   };
 
-  // Envío del formulario
+  // Maneja el envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
-    // Validaciones básicas
-    if (!formData.nombre || !formData.apellidos || !formData.email || !formData.password) {
-      setError('Por favor completa todos los campos.');
+    const { firstName, lastName, age, email, password } = formData;
+
+    if (!firstName || !lastName || !email || !password || age <= 0) {
+      setError('Por favor completa todos los campos correctamente.');
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres.');
-      return;
-    }
-
-    if (formData.edad < 0) {
-      setError('La edad no puede ser negativa.');
       return;
     }
 
@@ -57,17 +57,17 @@ const Signup: React.FC = () => {
       const result = await registerUser(formData);
       setMessage(result.message || 'Registro exitoso 🎉');
 
-      // Limpia el formulario
-      setFormData({ nombre: '', apellidos: '', edad: 0, email: '', password: '' });
+      setFormData({
+        firstName: '',
+        lastName: '',
+        age: 0,
+        email: '',
+        password: '',
+      });
 
-      // Redirige al login después de 1.5 segundos
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Error al registrar el usuario.');
-      }
+      setError(err instanceof Error ? err.message : 'Error al registrar el usuario.');
     }
   };
 
@@ -78,29 +78,32 @@ const Signup: React.FC = () => {
         <form onSubmit={handleSubmit} className="signup-form">
           <input
             type="text"
-            name="nombre"
+            name="firstName"
             placeholder="Nombre"
-            value={formData.nombre}
+            value={formData.firstName}
             onChange={handleChange}
             required
           />
+
           <input
             type="text"
-            name="apellidos"
+            name="lastName"
             placeholder="Apellidos"
-            value={formData.apellidos}
+            value={formData.lastName}
             onChange={handleChange}
             required
           />
+
           <input
             type="number"
-            name="edad"
+            name="age"
             placeholder="Edad"
-            value={formData.edad || ''}
+            value={formData.age === 0 ? '' : String(formData.age)} // ✅ evita warning
             onChange={handleChange}
-            min="0"
+            min="1"
             required
           />
+
           <input
             type="email"
             name="email"
@@ -109,6 +112,7 @@ const Signup: React.FC = () => {
             onChange={handleChange}
             required
           />
+
           <input
             type="password"
             name="password"
@@ -117,6 +121,7 @@ const Signup: React.FC = () => {
             onChange={handleChange}
             required
           />
+
           <button type="submit">Registrarse</button>
 
           {error && <p className="error-message">{error}</p>}

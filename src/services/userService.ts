@@ -1,4 +1,7 @@
 export interface RegisterData {
+  age: string;
+  lastName: string | number | readonly string[] | undefined;
+  firstName: string | number | readonly string[] | undefined;
   nombre: string;
   apellidos: string;
   edad: number;
@@ -13,7 +16,7 @@ export interface RegisterData {
  */
 export const registerUser = async (data: RegisterData) => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
