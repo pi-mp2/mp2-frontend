@@ -125,7 +125,7 @@ const Signup: React.FC = () => {
 
         <p className="login-link">
           ¿Ya tienes una cuenta?{' '}
-          <button className="link-text" type="button" onClick={() => navigate('/login')}>
+          <button className="link-button" type="button" onClick={() => navigate('/login')}>
             Inicia sesión
           </button>
         </p>
