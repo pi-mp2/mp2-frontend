@@ -1,14 +1,19 @@
-import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import "./MainLayout.scss";
+import { Outlet, useLocation } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
-export default function MainLayout(): JSX.Element {
+const MainLayout = () => {
+  const location = useLocation();
+
   return (
-    <div className="layout">
-      <Navbar />
-      <main className="layout__content">
-        <Outlet />
+    <div className="main-layout">
+      <Navbar /> {/* ✅ Siempre visible */}
+      <main>
+        <Outlet /> {/* Aquí se renderiza cada página */}
       </main>
+      {location.pathname === '/' && <Footer />} {/* ✅ Solo en Home */}
     </div>
   );
-}
+};
+
+export default MainLayout;
