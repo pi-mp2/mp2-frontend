@@ -1,0 +1,72 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #0f0f10;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* A ancho completo; si prefieres container centrado, usa max-width:1280px y margin:0 auto */
+.navbar__inner {
+  height: 64px;
+  width: 100%;
+  margin: 0;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand__logo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #b1000a;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+.brand__name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navlink {
+  color: #e6e6e6;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform .15s ease, background-color .15s ease, color .15s ease;
+
+  &.active {
+    background: #b1000a;
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  &:hover {
+    background: rgba(255,255,255,0.08);
+  }
+}
+
+.navlink--outlined {
+  border: 1px solid #b1000a;
+}
