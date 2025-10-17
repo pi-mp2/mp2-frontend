@@ -3,20 +3,22 @@
   top: 0;
   z-index: 50;
   background: #0f0f10;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 2rem; /* 🔹 espacio lateral para evitar que se pegue a los bordes */
 }
 
-/* A ancho completo; si prefieres container centrado, usa max-width:1280px y margin:0 auto */
+/* Contenedor interno */
 .navbar__inner {
   height: 64px;
   width: 100%;
-  margin: 0;
-  padding: 0 20px;
+  max-width: 1200px; /* 🔹 limita ancho máximo */
+  margin: 0 auto; /* 🔹 centra el contenido */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* 🔹 separa logo y links */
 }
 
+/* Marca (logo + texto) */
 .navbar__brand {
   display: inline-flex;
   align-items: center;
@@ -25,15 +27,11 @@
 }
 
 .brand__logo {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
+  object-fit: cover; /* 🔹 evita deformaciones en la imagen */
   background: #b1000a;
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: .5px;
 }
 
 .brand__name {
@@ -42,19 +40,21 @@
   font-size: 18px;
 }
 
+/* Enlaces de navegación */
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px; /* 🔹 más espacio entre enlaces */
+  flex-wrap: wrap; /* 🔹 evita que se salga en pantallas pequeñas */
 }
 
 .navlink {
   color: #e6e6e6;
   text-decoration: none;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border-radius: 10px;
   font-weight: 600;
-  transition: transform .15s ease, background-color .15s ease, color .15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 
   &.active {
     background: #b1000a;
@@ -63,10 +63,31 @@
   }
 
   &:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
+/* Botón resaltado (Registrarse) */
 .navlink--outlined {
   border: 1px solid #b1000a;
+
+  &:hover {
+    background: #b1000a;
+    color: #fff;
+  }
+}
+
+/* 🔹 Responsive fix: para pantallas pequeñas */
+@media (max-width: 768px) {
+  .navbar__inner {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+    padding: 10px 1rem;
+  }
+
+  .navbar__links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
