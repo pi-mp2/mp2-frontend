@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Signup.scss';
 import { registerUser, type RegisterData } from '../../services/userService';
 
@@ -6,6 +7,8 @@ import { registerUser, type RegisterData } from '../../services/userService';
  * Signup component - allows a new user to register.
  */
 const Signup: React.FC = () => {
+  const navigate = useNavigate();
+
   // Estado del formulario
   const [formData, setFormData] = useState<RegisterData>({
     nombre: '',
@@ -34,7 +37,7 @@ const Signup: React.FC = () => {
     setError('');
     setMessage('');
 
-    // Validaciones simples
+    // Validaciones básicas
     if (!formData.nombre || !formData.apellidos || !formData.email || !formData.password) {
       setError('Por favor completa todos los campos.');
       return;
@@ -52,8 +55,13 @@ const Signup: React.FC = () => {
 
     try {
       const result = await registerUser(formData);
-      setMessage(result.message || 'Registro exitoso.');
+      setMessage(result.message || 'Registro exitoso 🎉');
+
+      // Limpia el formulario
       setFormData({ nombre: '', apellidos: '', edad: 0, email: '', password: '' });
+
+      // Redirige al login después de 1.5 segundos
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -64,55 +72,64 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Crear cuenta</h2>
-      <form onSubmit={handleSubmit} className="signup-form">
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre"
-          value={formData.nombre}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="apellidos"
-          placeholder="Apellidos"
-          value={formData.apellidos}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="number"
-          name="edad"
-          placeholder="Edad"
-          value={formData.edad || ''}
-          onChange={handleChange}
-          min="0"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Registrarse</button>
+    <div className="signup-wrapper">
+      <div className="signup-container">
+        <h2>Crear cuenta</h2>
+        <form onSubmit={handleSubmit} className="signup-form">
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="apellidos"
+            placeholder="Apellidos"
+            value={formData.apellidos}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="number"
+            name="edad"
+            placeholder="Edad"
+            value={formData.edad || ''}
+            onChange={handleChange}
+            min="0"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Registrarse</button>
 
-        {error && <p className="error-message">{error}</p>}
-        {message && <p className="success-message">{message}</p>}
-      </form>
+          {error && <p className="error-message">{error}</p>}
+          {message && <p className="success-message">{message}</p>}
+        </form>
+
+        <p className="login-link">
+          ¿Ya tienes una cuenta?{' '}
+          <button className="link-text" type="button" onClick={() => navigate('/login')}>
+            Inicia sesión
+          </button>
+        </p>
+      </div>
     </div>
   );
 };

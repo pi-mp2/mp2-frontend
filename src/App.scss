@@ -1,0 +1,25 @@
+/* App.scss */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0f0f0f;
+  font-family: 'Poppins', sans-serif;
+}
+
+.app-container {
+  display: flex;
+  justify-content: center; /* centra horizontal */
+  align-items: center; /* centra vertical */
+  height: 100vh;
+}
+
+/* Centrar todo el contenido de la app */
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ocupa toda la pantalla */
+  width: 100vw;
+  background: linear-gradient(135deg, #0f0f0f, #1b1b1b);
+}

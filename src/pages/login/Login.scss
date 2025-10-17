@@ -1,12 +1,11 @@
-/* Signup.scss */
-.signup-container {
-  width: 100%;
-  max-width: 400px;
+.login-container {
+  width: 400px;
   padding: 2rem;
   background: #121212;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
   color: #f5f5f5;
+  font-family: 'Poppins', sans-serif;
   text-align: center;
 
   h2 {
@@ -15,7 +14,7 @@
     color: #e50914;
   }
 
-  .signup-form {
+  .login-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -28,7 +27,7 @@
       color: #fff;
       font-size: 0.95rem;
       outline: none;
-      transition: all 0.2s ease;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
 
       &:focus {
         border: 1px solid #e50914;
@@ -81,19 +80,22 @@
     }
   }
 
-  .login-link {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #aaa;
+.signup-redirect {
+  margin-top: 1.5rem;          // Da un margen superior más amplio (como .login-link)
+  font-size: 0.95rem;          // Ajusta el tamaño de texto para que sea más legible
+  color: #ccc;                 // Color gris claro para el texto base
 
-    a {
-      color: #e50914;
-      text-decoration: none;
-      font-weight: bold;
+  a {
+    color: #e50914;            // Rojo Netflix para el enlace
+    text-decoration: none;     // Quita el subrayado por defecto
+    font-weight: bold;         // Hace el texto del enlace más fuerte
+    transition: color 0.2s ease; // Suaviza el cambio de color en hover
 
-      &:hover {
-        text-decoration: underline;
-      }
+    &:hover {
+      color: #f40612;          // Rojo más brillante al pasar el mouse
+      text-decoration: underline; // Añade subrayado para indicar interacción
     }
   }
+}
+
 }
