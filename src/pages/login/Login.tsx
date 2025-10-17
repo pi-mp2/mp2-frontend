@@ -3,13 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './Login.scss';
 import { loginUser } from '../../services/authService';
 
-/**
- * Login component - allows a user to log in.
- */
 const Login: React.FC = () => {
   const navigate = useNavigate();
-
-  // Estados del formulario
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -20,27 +15,18 @@ const Login: React.FC = () => {
     setError('');
     setMessage('');
 
-    // Validación simple
     if (!email || !password) {
       setError('Por favor completa todos los campos.');
       return;
     }
 
     try {
-      // Llama al servicio de autenticación
       const result = await loginUser({ email, password });
-
-      // Muestra mensaje y redirige
       setMessage(result.message || 'Inicio de sesión exitoso ✅');
-
-      // Redirige al home luego de 1 segundo
-      setTimeout(() => navigate('/home'), 1000);
+      setTimeout(() => navigate('/'), 1000); // redirige a Home
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Error al iniciar sesión.');
-      }
+      if (err instanceof Error) setError(err.message);
+      else setError('Error al iniciar sesión.');
     }
   };
 
@@ -71,11 +57,7 @@ const Login: React.FC = () => {
 
         <p className="signup-redirect">
           ¿No tienes una cuenta?{' '}
-          <button
-            type="button"
-            className="link-button"
-            onClick={() => navigate('/signup')}
-          >
+          <button type="button" className="link-button" onClick={() => navigate('/signup')}>
             Regístrate
           </button>
         </p>

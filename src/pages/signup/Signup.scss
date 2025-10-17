@@ -1,4 +1,12 @@
 /* Signup.scss */
+
+.signup-wrapper {
+  min-height: calc(100dvh - 64px);
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
 .signup-container {
   width: 100%;
   max-width: 400px;
