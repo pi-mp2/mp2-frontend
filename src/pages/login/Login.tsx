@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.scss';
-import { loginUser } from '../../services/authService';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+
+  // Estados del formulario (visual)
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [message, setMessage] = useState<string>('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Modo demo: no llama a ningún servicio ni contexto
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
@@ -20,14 +22,9 @@ const Login: React.FC = () => {
       return;
     }
 
-    try {
-      const result = await loginUser({ email, password });
-      setMessage(result.message || 'Inicio de sesión exitoso ✅');
-      setTimeout(() => navigate('/'), 1000); // redirige a Home
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
-      else setError('Error al iniciar sesión.');
-    }
+    // Mensaje de éxito “mock” y redirección a Home
+    setMessage('Inicio de sesión (demo) ✅');
+    setTimeout(() => navigate('/'), 800);
   };
 
   return (
@@ -49,6 +46,18 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          {/* Enlace demo “¿Olvidaste tu contraseña?” (opcional) */}
+          <div className="login-extras">
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => navigate('/forgot-password')}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
           <button type="submit">Ingresar</button>
 
           {error && <p className="error-message">{error}</p>}
@@ -57,7 +66,11 @@ const Login: React.FC = () => {
 
         <p className="signup-redirect">
           ¿No tienes una cuenta?{' '}
-          <button type="button" className="link-button" onClick={() => navigate('/signup')}>
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => navigate('/signup')}
+          >
             Regístrate
           </button>
         </p>

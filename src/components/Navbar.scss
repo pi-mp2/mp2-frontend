@@ -4,18 +4,18 @@
   z-index: 50;
   background: #0f0f10;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 0.75rem 2rem; /* 🔹 espacio lateral para evitar que se pegue a los bordes */
+  padding: 0.75rem 2rem;
 }
 
 /* Contenedor interno */
 .navbar__inner {
   height: 64px;
   width: 100%;
-  max-width: 1200px; /* 🔹 limita ancho máximo */
-  margin: 0 auto; /* 🔹 centra el contenido */
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 🔹 separa logo y links */
+  justify-content: space-between;
 }
 
 /* Marca (logo + texto) */
@@ -30,7 +30,10 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  object-fit: cover; /* 🔹 evita deformaciones en la imagen */
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #fff;
   background: #b1000a;
 }
 
@@ -44,8 +47,8 @@
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 16px; /* 🔹 más espacio entre enlaces */
-  flex-wrap: wrap; /* 🔹 evita que se salga en pantallas pequeñas */
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .navlink {
@@ -77,7 +80,15 @@
   }
 }
 
-/* 🔹 Responsive fix: para pantallas pequeñas */
+/* (Opcional) si luego agregas logout, puedes usar este estilo */
+.navlink--danger {
+  background: #b1000a;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .navbar__inner {
     flex-direction: column;
