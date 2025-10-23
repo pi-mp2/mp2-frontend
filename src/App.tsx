@@ -6,6 +6,8 @@ import Signup from './pages/signup/Signup';
 import Login from './pages/login/Login';
 import Sitemap from './pages/sitemap/Sitemap';
 import MainLayout from './layouts/MainLayout';
+import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 import './App.scss';
 
 interface ProtectedRouteProps {
@@ -26,6 +28,7 @@ const App: FC = () => {
     <div className="app-container">
       <Router>
         <Routes>
+          <Navbar />
           {/* 🔹 TODAS las rutas que deben mostrar el Navbar usan MainLayout */}
           <Route element={<MainLayout />}>
             <Route index element={<Home />} /> {/* "/" */}
@@ -38,6 +41,7 @@ const App: FC = () => {
           {/* 🔹 Redirección por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Footer />
       </Router>
     </div>
   );
