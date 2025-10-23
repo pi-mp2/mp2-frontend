@@ -4,6 +4,7 @@ import Home from './pages/home/Home';
 import AboutUs from './pages/about/AboutUs';
 import Signup from './pages/signup/Signup';
 import Login from './pages/login/Login';
+import Sitemap from './pages/sitemap/Sitemap';
 import MainLayout from './layouts/MainLayout';
 import './App.scss';
 
@@ -31,6 +32,7 @@ const App: FC = () => {
             <Route path="about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/sitemap" element={<Sitemap />} />
             <Route path="dashboard" element={<ProtectedRoute element={<Home />} />} />
           </Route>
           {/* 🔹 Redirección por defecto */}
