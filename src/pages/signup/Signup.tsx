@@ -8,6 +8,7 @@ import { registerUser, type RegisterData } from '../../services/userService';
  */
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  
 
   // Estado del formulario
   const [formData, setFormData] = useState<RegisterData>({

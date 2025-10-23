@@ -1,12 +1,9 @@
 export interface RegisterData {
-  age: string;
-  lastName: string | number | readonly string[] | undefined;
-  firstName: string | number | readonly string[] | undefined;
-  nombre: string;
-  apellidos: string;
-  edad: number;
-  email: string;
-  password: string;
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    password: string;
 }
 
 /**

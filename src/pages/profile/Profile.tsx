@@ -4,8 +4,6 @@ import "./Profile.scss";
 //import { getUserProfile, updateUserProfile } from "../../services/userService";
 
 const Profile: React.FC = () => {
-    const navigate = useNavigate();
-    const [username, setUsername] = useState<string>("");
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
@@ -44,15 +42,6 @@ const Profile: React.FC = () => {
                     <button type="button" className="edit-button" onClick={editProfile}>Editar Perfil</button>
                     <input
                         type="text"
-                        className="username-input"
-                        placeholder="Nombre de usuario"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        readOnly = {!isEditing}
-                        required
-                    />
-                    <input
-                        type="text"
                         className="first-name-input"
                         placeholder="Nombre"
                         value={firstName}
@@ -69,7 +58,7 @@ const Profile: React.FC = () => {
                         readOnly = {!isEditing}
                         required
                     />
-                    <label>Edad:</label>
+                    <label>Edad:{age}</label>
                     <input
                         type="email"
                         placeholder="Correo electrónico"
