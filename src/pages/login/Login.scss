@@ -46,6 +46,28 @@
       &::placeholder { color: #888; }
     }
 
+/* dentro de .login-container .login-form {...} */
+.login-extras {
+  display: flex;
+  justify-content: center;   /* << centrado */
+  margin: .3rem 0 .6rem;
+
+  .link-button {
+    color: #e50914;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0;
+  }
+
+  .link-button:hover {
+    color: #f40612;
+    text-decoration: underline;
+  }
+}
+
+
     button {
       margin-top: 0.5rem;
       padding: 0.9rem;

@@ -1,13 +1,35 @@
 export interface RegisterData {
-  age: string;
-  lastName: string | number | readonly string[] | undefined;
-  firstName: string | number | readonly string[] | undefined;
-  nombre: string;
-  apellidos: string;
-  edad: number;
-  email: string;
-  password: string;
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    password: string;
+    secretQuestion: string;
+    secretAnswer: string;
 }
+
+export interface ProfileData {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    secretQuestion: string;
+    secretAnswer: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface UpdateData {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    secretQuestion: string;
+    secretAnswer: string;
+    updatedAt: Date;
+}
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Send user registration data to the backend API.
@@ -16,7 +38,7 @@ export interface RegisterData {
  */
 export const registerUser = async (data: RegisterData) => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+        const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,3 +56,91 @@ export const registerUser = async (data: RegisterData) => {
         throw error;
     };
 };
+
+export const getUsers = async () => {
+    const res = await fetch(`${API_URL}/users`);
+    if (!res.ok) throw new Error("Error al obtener usuarios");
+    return res.json();
+}
+
+export const getUserById = async (id: string) => {
+    const res = await fetch (`${API_URL}/users/${id}`);
+    if(!res.ok) throw new Error("Error al obtener usuario");
+    return res.json();
+};
+
+export const updateUserProfile = async (data: Partial<UpdateData>, token: string) => {
+    const res = await fetch(`${API_URL}/users/profile`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+    if(!res.ok) throw new Error(result.message || "Error al actualizar perfil");
+    return result;
+};
+
+export const deleteUserProfile = async (token: string) => {
+    const res = await fetch (`${API_URL}/users/profile`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}`},
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al eliminar cuenta");
+    return result;
+};
+
+export const getSecretQuestion = async (email: string) => {
+    const res = await fetch(`${API_URL}/users/forgot-password`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({email}),
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al obtener pregunta secreta");
+    return result;
+};
+
+export const resetPasswordWithAnswer = async (
+    email: string,
+    secretAnswer: string,
+    newPassword: string
+) => {
+    const res = await fetch(`${API_URL}/users/reset-password-secret`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, secretAnswer, newPassword }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al resetear contraseña");
+    return result;
+};
+
+export const getActivityHistory = async (token: string) => {
+    const res = await fetch(`${API_URL}/users/activity`, {
+        headers: {Autorization: `Bearer ${token}`},
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al obtener historial");
+    return result;
+}
+
+export const getUserProfile = async (token: string) => {
+    const res = await fetch(`${API_URL}/profile`, {
+        headers: { Authorization: `Bearer {token}`},
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al obtener perfil");
+    return result;
+}
