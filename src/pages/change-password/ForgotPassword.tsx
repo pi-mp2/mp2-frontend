@@ -7,7 +7,7 @@ import { getSecretQuestion } from "../../services/userService";
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [secretQuestion, setSecretQuestion] = useState("");
+  const [securityQuestion, setSecurityQuestion] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,7 @@ const ForgotPassword: React.FC = () => {
 
     try {
       const data = await getSecretQuestion(email);
-      setSecretQuestion(data.secretQuestion);
+      setSecurityQuestion(data.securityQuestion);
     } catch (error:any) {
       setErr(error.message);
     } finally {
@@ -27,7 +27,7 @@ const ForgotPassword: React.FC = () => {
   };
 
   const goToReset = () => {
-    navigate(`/reset-password?email=${encodeURIComponent(email)}&question=${encodeURIComponent(secretQuestion)}`)
+    navigate(`/reset-password?email=${encodeURIComponent(email)}&question=${encodeURIComponent(securityQuestion)}`)
   }
 
   return (
@@ -46,9 +46,9 @@ const ForgotPassword: React.FC = () => {
           {err && <p className="error-message">{err}</p>}
         </form>
 
-        {secretQuestion && (
+        {securityQuestion && (
           <div className="auth-question">
-            <p><strong>Pregunta secreta:</strong> {secretQuestion}</p>
+            <p><strong>Pregunta secreta:</strong> {securityQuestion}</p>
             <button onClick={goToReset}>Responder y cambiar contraseña</button>
           </div>
         )}

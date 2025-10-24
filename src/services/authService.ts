@@ -4,13 +4,14 @@ export interface LoginData {
   password: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
 /**
  * Envía credenciales al backend para iniciar sesión
  * @param data - email y contraseña del usuario
  */
 export const loginUser = async (data: LoginData) => {
   try {
-    const res = await fetch("https://mp2-backend.onrender.com/api/auth/login", {
+    const res = await fetch("${API_URL}/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

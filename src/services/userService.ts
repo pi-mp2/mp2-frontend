@@ -4,8 +4,8 @@ export interface RegisterData {
     age: number;
     email: string;
     password: string;
-    secretQuestion: string;
-    secretAnswer: string;
+    securityQuestion: string;
+    securityAnswer: string;
 }
 
 export interface ProfileData {
@@ -13,9 +13,9 @@ export interface ProfileData {
     lastName: string;
     age: number;
     email: string;
-    secretQuestion: string;
-    secretAnswer: string;
-    createdAt: Date;
+    securityQuestion: string;
+    securityAnswer: string;
+    createdAt: Date
     updatedAt: Date;
 }
 
@@ -24,8 +24,8 @@ export interface UpdateData {
     lastName: string;
     age: number;
     email: string;
-    secretQuestion: string;
-    secretAnswer: string;
+    securityQuestion: string;
+    securityAnswer: string;
     updatedAt: Date;
 }
 
@@ -111,13 +111,13 @@ export const getSecretQuestion = async (email: string) => {
 
 export const resetPasswordWithAnswer = async (
     email: string,
-    secretAnswer: string,
+    securityAnswer: string,
     newPassword: string
 ) => {
     const res = await fetch(`${API_URL}/users/reset-password-secret`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ email, secretAnswer, newPassword }),
+        body: JSON.stringify({ email, securityAnswer, newPassword }),
     });
 
     const result = await res.json();
