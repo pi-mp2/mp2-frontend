@@ -30,7 +30,7 @@ export const loginUser = async (data: LoginData) => {
 
     // Guardar token en localStorage
     if (result.data?.token) {
-      localStorage.setItem("token", result.token);
+      localStorage.setItem("token", result.data.token);
     }
 
     return result;

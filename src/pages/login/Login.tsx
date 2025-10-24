@@ -29,7 +29,7 @@ const Login: React.FC = () => {
 
       const result = await loginUser({email, password});
 
-      if (result.token) {
+      if (result.data?.token) {
         setMessage('Inicio de sesión exitoso. Redirigiendo...');
         setTimeout(() => {
           navigate('/home');
