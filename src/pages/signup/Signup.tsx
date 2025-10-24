@@ -17,6 +17,8 @@ const Signup: React.FC = () => {
     age: 0,
     email: '',
     password: '',
+    secretQuestion: '',
+    secretAnswer: '',
   });
 
   // Mensajes
@@ -24,7 +26,7 @@ const Signup: React.FC = () => {
   const [error, setError] = useState('');
 
   // Maneja los cambios de los campos
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -34,6 +36,7 @@ const Signup: React.FC = () => {
           ? value === '' ? 0 : parseInt(value, 10) || 0 // ✅ siempre número
           : value,
     }));
+
   };
 
   // Maneja el envío del formulario
@@ -64,6 +67,8 @@ const Signup: React.FC = () => {
         age: 0,
         email: '',
         password: '',
+        secretQuestion: '',
+        secretAnswer: '',
       });
 
       setTimeout(() => navigate('/login'), 1500);
@@ -119,6 +124,26 @@ const Signup: React.FC = () => {
             name="password"
             placeholder="Contraseña"
             value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <select
+            name="secretQuestion"
+            value={formData.secretQuestion}
+            onChange={handleChange}
+            required
+          >
+            <option value=""> Selecciona una pregunta secreta</option>
+            <option value="¿Cuál es el nombre de tu primera mascota?">¿Cuál es el nombre de tu primera mascota?</option>
+            <option value="¿Cuál es el nombre de la calle donde creciste?">¿Cuál es el nombre de la calle donde creciste?</option>
+            <option value="¿Cuál es el nombre de tu mejor amigo de la infancia?">¿Cuál es el nombre de tu mejor amigo de la infancia?</option>
+            <option value="¿Cuál es el nombre de tu profesor/a de primara favorito/a?">¿Cuál es el nombre de tu profesor/a de primara favorito/a?</option>
+          </select>
+
+          <input
+            name="secretAnswer"
+            value={formData.secretAnswer}
             onChange={handleChange}
             required
           />

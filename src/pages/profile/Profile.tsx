@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Profile.scss";
 //import { getUserProfile, updateUserProfile } from "../../services/userService";
 
@@ -40,6 +39,7 @@ const Profile: React.FC = () => {
                 <h2>Mi Perfil</h2>
                 <form className="profile-form" autoComplete="off">
                     <button type="button" className="edit-button" onClick={editProfile}>Editar Perfil</button>
+                    <label>Nombre:</label>
                     <input
                         type="text"
                         className="first-name-input"
@@ -49,6 +49,7 @@ const Profile: React.FC = () => {
                         readOnly = {!isEditing}
                         required
                     />
+                    <label>Apellido:</label>
                     <input
                         type="text"
                         placeholder="Apellido"
@@ -59,6 +60,7 @@ const Profile: React.FC = () => {
                         required
                     />
                     <label>Edad:{age}</label>
+                    <label>Correo Electrónico:</label>
                     <input
                         type="email"
                         placeholder="Correo electrónico"
@@ -68,7 +70,7 @@ const Profile: React.FC = () => {
                         readOnly = {!isEditing}
                         required
                     />
-                    <button type="submit" disabled={!isEditing} >Guardar cambios</button>
+                    <button type="submit" disabled={!isEditing} onSubmit={handleSubmit} >Guardar cambios</button>
                     <button type="button" className="cancel-edit" disabled={!isEditing} onClick={cancelEdit}>Cancelar</button>
                     {error && <p className="error-message">{error}</p>}
                     {message && <p className="success-message">{message}</p>}
