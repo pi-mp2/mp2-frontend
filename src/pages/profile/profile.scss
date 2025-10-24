@@ -8,6 +8,27 @@
   font-family: "Poppins", sans-serif;
 }
 
+.delete-account-btn {
+  background-color: #dc3545; /* rojo similar a los estilos de error */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #c82333;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .profile-container {
   background: #2a2a2a;
   border-radius: 12px;

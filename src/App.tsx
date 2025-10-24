@@ -4,6 +4,7 @@ import Home from './pages/home/Home';
 import AboutUs from './pages/about/AboutUs';
 import Login from './pages/login/Login';
 import Signup from './pages/signup';
+import Profile from './pages/profile/Profile';
 import Sitemap from './pages/sitemap/Sitemap';
 import ResetPassword from './pages/change-password/ResetPassword';
 import ForgotPassword from './pages/change-password/ForgotPassword';
@@ -36,6 +37,7 @@ const App: FC = () => {
             <Route path="about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/home" element={<Home />} />
