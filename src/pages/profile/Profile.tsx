@@ -10,8 +10,8 @@ const Profile: React.FC = () => {
         lastName: "",
         email: "",
         age: 0,
-        secretQuestion: "",
-        secretAnswer: "",
+        securityQuestion: "",
+        securityAnswer: "",
         createdAt: new Date(),
         updatedAt: new Date(),
     });
@@ -65,8 +65,8 @@ const Profile: React.FC = () => {
                 lastName: profile.lastName ?? "",
                 age: profile.age ?? 0,
                 email: profile.email ?? "",
-                secretQuestion: profile.secretQuestion ?? "",
-                secretAnswer: profile.secretAnswer ?? "",
+                securityQuestion: profile.securityQuestion ?? "",
+                securityAnswer: profile.securityAnswer ?? "",
                 updatedAt: new Date(),
             };
 
@@ -126,8 +126,8 @@ const Profile: React.FC = () => {
                     <label>Pregunta secreta:</label>
                     <input
                         type="text"
-                        name="secretQuestion"
-                        value={profile?.secretQuestion}
+                        name="securityQuestion"
+                        value={profile?.securityQuestion}
                         onChange={handleChange}
                         readOnly={!isEditing}
                     />
@@ -135,8 +135,8 @@ const Profile: React.FC = () => {
                     <label>Respuesta secreta:</label>
                     <input
                         type="password"
-                        name="secretAnswer"
-                        value={profile?.secretAnswer}
+                        name="securityAnswer"
+                        value={profile?.securityAnswer}
                         onChange={handleChange}
                         readOnly={!isEditing}
                     />

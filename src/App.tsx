@@ -1,5 +1,5 @@
 import React, { useEffect, type FC, type JSX } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/home/Home';
 import AboutUs from './pages/about/AboutUs';
 import Login from './pages/login/Login';
@@ -26,9 +26,7 @@ const App: FC = () => {
 
   return (
     <div className="app-container">
-      <Router>
         <Routes>
-          <Navbar />
           {/* 🔹 TODAS las rutas que deben mostrar el Navbar usan MainLayout */}
           <Route element={<MainLayout />}>
             <Route index element={<Home />} /> {/* "/" */}
@@ -43,8 +41,6 @@ const App: FC = () => {
           {/* 🔹 Redirección por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <Footer />
-      </Router>
     </div>
   );
 };

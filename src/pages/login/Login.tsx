@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/authService';
 import './Login.scss';
 
 const Login: React.FC = () => {
@@ -10,9 +11,10 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Modo demo: no llama a ningún servicio ni contexto
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
@@ -22,9 +24,24 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Mensaje de éxito “mock” y redirección a Home
-    setMessage('Inicio de sesión (demo) ✅');
-    setTimeout(() => navigate('/'), 800);
+    try {
+      setLoading(true);
+
+      const result = await loginUser({email, password});
+
+      if (result.token) {
+        setMessage('Inicio de sesión exitoso. Redirigiendo...');
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1500);
+      } else {
+        setError('Credenciales inválidas. Intenta de nuevo.');
+      }
+    } catch (err:any) {
+      setError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

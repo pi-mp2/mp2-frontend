@@ -17,8 +17,8 @@ const Signup: React.FC = () => {
     age: 0,
     email: '',
     password: '',
-    secretQuestion: '',
-    secretAnswer: '',
+    securityQuestion: '',
+    securityAnswer: '',
   });
 
   // Mensajes
@@ -67,8 +67,8 @@ const Signup: React.FC = () => {
         age: 0,
         email: '',
         password: '',
-        secretQuestion: '',
-        secretAnswer: '',
+        securityQuestion: '',
+        securityAnswer: '',
       });
 
       setTimeout(() => navigate('/login'), 1500);
@@ -129,8 +129,8 @@ const Signup: React.FC = () => {
           />
 
           <select
-            name="secretQuestion"
-            value={formData.secretQuestion}
+            name="securityQuestion"
+            value={formData.securityQuestion}
             onChange={handleChange}
             required
           >
@@ -142,8 +142,8 @@ const Signup: React.FC = () => {
           </select>
 
           <input
-            name="secretAnswer"
-            value={formData.secretAnswer}
+            name="securityAnswer"
+            value={formData.securityAnswer}
             onChange={handleChange}
             required
           />

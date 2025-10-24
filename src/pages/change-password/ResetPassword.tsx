@@ -7,9 +7,9 @@ const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [sp] = useSearchParams();
   const email = sp.get("email") || "";
-  const secretQuestion = sp.get("question") || "";
+  const securityQuestion = sp.get("question") || "";
 
-  const [secretAnswer, setSecretAnswer] = useState("");
+  const [securityAnswer, setSecurityAnswer] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [err, setErr] = useState("");
@@ -30,7 +30,7 @@ const ResetPassword: React.FC = () => {
     }
 
     try {
-      await resetPasswordWithAnswer(email, secretAnswer, password);
+      await resetPasswordWithAnswer(email, securityAnswer, password);
       setMsg("Contraseña actualizada correctamente");
       setTimeout(()=>navigate("/login"), 1500);
     } catch (error:any) {
@@ -42,13 +42,13 @@ const ResetPassword: React.FC = () => {
     <div className="auth-wrapper">
       <div className="auth-card">
         <h2>Restablecer contraseña</h2>
-        <p className="secretQuestion"><strong>Pregunta secreta:</strong> {secretQuestion}</p>
+        <p className="securityQuestion"><strong>Pregunta secreta:</strong> {securityQuestion}</p>
         <form onSubmit={onSubmit} className="auth-form">
           <input
             type="text"
             placeholder="Tu respuesta"
-            value={secretAnswer}
-            onChange={(e) => setSecretAnswer(e.target.value)}
+            value={securityAnswer}
+            onChange={(e) => setSecurityAnswer(e.target.value)}
             required
           />
           <input
