@@ -29,7 +29,7 @@ export const loginUser = async (data: LoginData) => {
     if (!res.ok) throw new Error(result.message || "Error en inicio de sesión.");
 
     // Guardar token en localStorage
-    if (result.token) {
+    if (result.data?.token) {
       localStorage.setItem("token", result.token);
     }
 

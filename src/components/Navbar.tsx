@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { AuthContext, useAuth } from "../services/authContext"; // hook del contexto
+import { useAuth } from "../contexts/authContext";
 import "./Navbar.scss";
 
 export default function Navbar(): JSX.Element {
