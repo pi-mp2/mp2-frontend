@@ -1,71 +1,51 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { logoutUser } from "../services/authService";
+import { AuthContext, useAuth } from "../services/authContext"; // hook del contexto
 import "./Navbar.scss";
 
-/**
- * Navbar reactiva y dinámica.
- * - Cambia los enlaces según el estado de autenticación.
- * - Colapsa en móvil con menú hamburguesa.
- */
 export default function Navbar(): JSX.Element {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []);
-
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-  const closeMenu = () => setMenuOpen(false);
-
   const handleLogout = () => {
-    logoutUser();
-    setIsAuthenticated(false);
+    logout();
     navigate("/login");
   };
-
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        {/* Logo */}
-        <Link to="/" className="navbar__brand" aria-label="Ir a inicio">
-          <span className="brand__logo">MS</span>
+        <Link to={isAuthenticated ? "/home" : "/"} className="navbar__brand" aria-label="Ir a inicio">
+          <span className="brand__logo">🎬</span>
           <span className="brand__name">Movie Star</span>
         </Link>
 
-        {/* Menú hamburguesa para móvil */}
-        <button
-          className={`navbar__toggle ${menuOpen ? "is-active" : ""}`}
-          onClick={toggleMenu}
-          aria-label="Alternar menú de navegación"
-          >
-          <span className="toggle__bar"></span>
-          <span className="toggle__bar"></span>
-          <span className="toggle__bar"></span>
-        </button>
-
-        {/* Enlaces de navegación */}
-        <nav
-          className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}
-          arial-label="Navegación principal"
-          >
-            <NavLink to="/" onClick={closeMenu}>Inicio</NavLink>
-            {isAuthenticated ? (
-              <>
-                <NavLink to="/profile" onClick={closeMenu}>Perfil</NavLink>
-                <button className="logout-button" onClick={() => { closeMenu(); handleLogout(); }}>Cerrar sesión</button>
-              </>
-            ) : (
-              <>
-                <NavLink to="/login" onClick={closeMenu}>Iniciar sesión</NavLink>
-                <NavLink to="/register" onClick={closeMenu}>Registrarse</NavLink>
-              </>
-            )}
-          </nav>
+        <nav className="navbar__links" aria-label="Navegación principal">
+          {isAuthenticated ? (
+            <>
+              <NavLink to="/home" end className="navlink">
+                Inicio
+              </NavLink>
+              <NavLink to="/profile" className="navlink">
+                Perfil
+              </NavLink>
+              <button onClick={handleLogout} className="navlink navlink--button">
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/" end className="navlink">
+                Inicio
+              </NavLink>
+              <NavLink to="/login" className="navlink">
+                Iniciar sesión
+              </NavLink>
+              <NavLink to="/signup" className="navlink navlink--outlined">
+                Registrarse
+              </NavLink>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   );

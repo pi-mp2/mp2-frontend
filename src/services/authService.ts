@@ -57,3 +57,5 @@ export const loginUser = async (data: LoginData) => {
 export const logoutUser = () => {
   localStorage.removeItem("token");
 };
+
+
