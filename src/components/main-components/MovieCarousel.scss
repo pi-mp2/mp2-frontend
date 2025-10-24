@@ -1,0 +1,45 @@
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/Edge
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.arrow {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #ff3b3b;
+  }
+
+  &.left {
+    position: absolute;
+    left: 0;
+    z-index: 10;
+  }
+
+  &.right {
+    position: absolute;
+    right: 0;
+    z-index: 10;
+  }
+}

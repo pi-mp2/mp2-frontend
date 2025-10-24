@@ -1,0 +1,24 @@
+.movie-card {
+  background: #2a2a2a;
+  border-radius: 10px;
+  min-width: 150px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+
+  img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #ddd;
+    margin-top: 0.5rem;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #ff3b3b;
+  }
+}

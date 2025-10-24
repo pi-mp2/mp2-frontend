@@ -89,6 +89,9 @@ const Profile: React.FC = () => {
         <div className="profile-wrapper">
             <div className="profile-container">
                 <h2>Mi Perfil</h2>
+                <div className="profile-picture">
+                    Foto
+                </div>
                 <form className="profile-form" autoComplete="off" onSubmit={handleSubmit}>
                     <button type="button" className="edit-button" onClick={editProfile}>Editar Perfil</button>
                     <label>Nombre:</label>
