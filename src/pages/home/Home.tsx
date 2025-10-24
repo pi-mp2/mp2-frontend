@@ -1,23 +1,27 @@
-import React, {useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Home.scss';
+import React, { useState, useEffect } from "react";
+import "./Home.scss";
+import MovieCarousel from "../../components/main-components/MovieCarousel"
 
-const Home: React.FC = () => {
-  const navigate = useNavigate();
+export default function Home(): JSX.Element {
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   return (
     <div className="home">
-      <h1>¡Bienvenido a Movie Star!</h1>
-      <p>Descubre, guarda y disfruta tus películas favoritas.</p>
+      <section className="home-section">
+        <h2 className="section-title">Para ti</h2>
+        <MovieCarousel category="recommended" />
+      </section>
+
+      <section className="home-section">
+        <h2 className="section-title">Más recientes</h2>
+        <MovieCarousel category="latest" />
+      </section>
     </div>
   );
-};
-
-export default Home;
+}

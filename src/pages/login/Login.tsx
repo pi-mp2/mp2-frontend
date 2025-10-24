@@ -32,7 +32,7 @@ const Login: React.FC = () => {
       if (result.token) {
         setMessage('Inicio de sesión exitoso. Redirigiendo...');
         setTimeout(() => {
-          navigate('/profile');
+          navigate('/home');
         }, 1500);
       } else {
         setError('Credenciales inválidas. Intenta de nuevo.');

@@ -7,9 +7,10 @@ import Signup from './pages/signup';
 import Sitemap from './pages/sitemap/Sitemap';
 import ResetPassword from './pages/change-password/ResetPassword';
 import ForgotPassword from './pages/change-password/ForgotPassword';
-import MainLayout from './layouts/MainLayout';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
+//import MainLayout from './layouts/MainLayout';
+import Landing from './pages/landing/Landing';
 import './App.scss';
 
 /** Demo de ruta protegida basada en localStorage (visual-only) */
@@ -26,21 +27,25 @@ const App: FC = () => {
 
   return (
     <div className="app-container">
+      <Navbar />
         <Routes>
           {/* 🔹 TODAS las rutas que deben mostrar el Navbar usan MainLayout */}
-          <Route element={<MainLayout />}>
-            <Route index element={<Home />} /> {/* "/" */}
+          
+          <Route>
+            <Route index element={<Landing />} /> {/* "/" */}
             <Route path="about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/sitemap" element={<Sitemap />} />
             <Route path="dashboard" element={<ProtectedRoute element={<Home />} />} />
           </Route>
           {/* 🔹 Redirección por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Footer />
     </div>
   );
 };
