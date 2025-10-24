@@ -8,6 +8,17 @@ export interface RegisterData {
     secretAnswer: string;
 }
 
+export interface ProfileData {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    secretQuestion: string;
+    secretAnswer: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface UpdateData {
     firstName: string;
     lastName: string;
@@ -15,6 +26,7 @@ export interface UpdateData {
     email: string;
     secretQuestion: string;
     secretAnswer: string;
+    updatedAt: Date;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -120,5 +132,15 @@ export const getActivityHistory = async (token: string) => {
 
     const result = await res.json();
     if (!res.ok) throw new Error(result.message || "Error al obtener historial");
+    return result;
+}
+
+export const getUserProfile = async (token: string) => {
+    const res = await fetch(`${API_URL}/profile`, {
+        headers: { Authorization: `Bearer {token}`},
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Error al obtener perfil");
     return result;
 }
