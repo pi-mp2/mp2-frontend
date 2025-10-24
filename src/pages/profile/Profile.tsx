@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Profile.scss";
-//import { getUserProfile, updateUserProfile } from "../../services/userService";
+import { getUserById, updateUserProfile } from "../../services/userService";
+
+interface UserProfile {
+    firstName: string;
+    lastName: string;
+    age: number;
+    email: string;
+    secretQuestion: string;
+    secretAnswer: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
 const Profile: React.FC = () => {
-    const [firstName, setFirstName] = useState<string>("");
-    const [lastName, setLastName] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
-    const [age, setAge] = useState<number>(0);
-    const [updatedAt, setUpdatedAt] = useState<string>("");
-    const [createdAt, setCreatedAt] = useState<string>("");
+    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [message, setMessage] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -21,16 +27,17 @@ const Profile: React.FC = () => {
         setIsEditing(false);
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
-        setMessage("");
-        // Lógica para actualizar el perfil del usuario
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try{
+                const token = localStorage.getItem("token");
+                if (!token) throw new Error("No se encontró el token de autenticación.");
 
-        setUpdatedAt(new Date().toLocaleDateString());
-        setMessage("Perfil actualizado correctamente ✅");
-        setIsEditing(false);
+                //const data = await getUserProfile(token);
+                //setProfile(data);
+            }
         }
+    })
 
 
     return (

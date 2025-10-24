@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./ResetPassword.scss";
+import { resetPasswordWithAnswer } from "../../services/userService";
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const [sp] = useSearchParams();
-  const token = sp.get("token") || "demo";
+  const email = sp.get("email") || "";
+  const secretQuestion = sp.get("question") || "";
 
+  const [secretAnswer, setSecretAnswer] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
     setMsg("");
@@ -26,16 +29,28 @@ const ResetPassword: React.FC = () => {
       return;
     }
 
-    // Solo visual: muestra mensaje y redirige al login
-    setMsg(`Contraseña actualizada (token: ${token}).`);
-    setTimeout(() => navigate("/login"), 1200);
+    try {
+      await resetPasswordWithAnswer(email, secretAnswer, password);
+      setMsg("Contraseña actualizada correctamente");
+      setTimeout(()=>navigate("/login"), 1500);
+    } catch (error:any) {
+      setErr(error.message);
+    }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
         <h2>Restablecer contraseña</h2>
+        <p className="secretQuestion"><strong>Pregunta secreta:</strong> {secretQuestion}</p>
         <form onSubmit={onSubmit} className="auth-form">
+          <input
+            type="text"
+            placeholder="Tu respuesta"
+            value={secretAnswer}
+            onChange={(e) => setSecretAnswer(e.target.value)}
+            required
+          />
           <input
             type="password"
             placeholder="Nueva contraseña"
