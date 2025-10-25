@@ -136,8 +136,8 @@ export const getActivityHistory = async (token: string) => {
 }
 
 export const getUserProfile = async (token: string) => {
-    const res = await fetch(`${API_URL}/profile`, {
-        headers: { Authorization: `Bearer {token}`},
+    const res = await fetch(`${API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${token}`},
     });
 
     const result = await res.json();
