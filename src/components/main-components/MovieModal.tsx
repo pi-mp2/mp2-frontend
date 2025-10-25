@@ -12,16 +12,22 @@ interface MovieModalProps {
 
 const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
   return (
-    // Heurística 2: Control y libertad del usuario (puede cerrar el modal haciendo clic fuera o en la X)
-    <div className="movie-modal__overlay" onClick={onClose}>
+    // Heurística 2 + Accesibilidad: Control y libertad del usuario + cierre con clic o teclado
+    <div
+      className="movie-modal__overlay"
+      onClick={onClose}
+      role="presentation"
+      aria-label="Cerrar ventana modal"
+    >
       <div
         className="movie-modal__content"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-labelledby="movie-title"
+        aria-describedby="movie-description"
         aria-modal="true"
       >
-        {/* Heurística 1: Visibilidad del estado del sistema → botón visible para cerrar */}
+        {/* Botón visible y accesible */}
         <button
           className="movie-modal__close"
           onClick={onClose}
@@ -30,18 +36,17 @@ const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
           ×
         </button>
 
-        {/* Heurística 4: Consistencia y estándares → estructura visual coherente */}
+        {/* 🔹 Accesibilidad: texto alternativo descriptivo para la imagen */}
         <img
           src={movie.posterUrl}
-          alt={`Póster de ${movie.title}`}
+          alt={`Póster de la película ${movie.title}`}
           className="movie-modal__image"
         />
 
-        {/* Heurística 6: Reconocer antes que recordar → título claro y visible */}
         <h2 id="movie-title">{movie.title}</h2>
 
-        {/* Heurística 5: Ayuda y documentación → mensaje útil si no hay descripción */}
-        <p>{movie.description || "Sin descripción disponible."}</p>
+        {/* 🔹 Agregamos id para descripción accesible */}
+        <p id="movie-description">{movie.description || "Sin descripción disponible."}</p>
       </div>
     </div>
   );
