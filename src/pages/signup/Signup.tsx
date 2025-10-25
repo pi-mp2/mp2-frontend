@@ -3,14 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import './Signup.scss';
 import { registerUser, type RegisterData } from '../../services/userService';
 
-/**
- * Signup component - allows a new user to register.
- */
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  
 
-  // Estado del formulario
   const [formData, setFormData] = useState<RegisterData>({
     firstName: '',
     lastName: '',
@@ -21,25 +16,20 @@ const Signup: React.FC = () => {
     securityAnswer: '',
   });
 
-  // Mensajes
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Maneja los cambios de los campos
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]:
         name === 'age'
-          ? value === '' ? 0 : parseInt(value, 10) || 0 // ✅ siempre número
+          ? value === '' ? 0 : parseInt(value, 10) || 0
           : value,
     }));
-
   };
 
-  // Maneja el envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -47,6 +37,7 @@ const Signup: React.FC = () => {
 
     const { firstName, lastName, age, email, password } = formData;
 
+    // 🔹 Heurística 5: Prevención de errores
     if (!firstName || !lastName || !email || !password || age <= 0) {
       setError('Por favor completa todos los campos correctamente.');
       return;
@@ -59,7 +50,7 @@ const Signup: React.FC = () => {
 
     try {
       const result = await registerUser(formData);
-      setMessage(result.message || 'Registro exitoso 🎉');
+      setMessage(result.message || 'Registro exitoso');
 
       setFormData({
         firstName: '',
@@ -104,7 +95,7 @@ const Signup: React.FC = () => {
             type="number"
             name="age"
             placeholder="Edad"
-            value={formData.age === 0 ? '' : String(formData.age)} // ✅ evita warning
+            value={formData.age === 0 ? '' : String(formData.age)}
             onChange={handleChange}
             min="1"
             required
@@ -122,7 +113,7 @@ const Signup: React.FC = () => {
           <input
             type="password"
             name="password"
-            placeholder="Contraseña"
+            placeholder="Contraseña (mínimo 6 caracteres)"
             value={formData.password}
             onChange={handleChange}
             required
@@ -134,15 +125,15 @@ const Signup: React.FC = () => {
             onChange={handleChange}
             required
           >
-            <option value=""> Selecciona una pregunta secreta</option>
+            <option value="">Selecciona una pregunta secreta</option>
             <option value="¿Cuál es el nombre de tu primera mascota?">¿Cuál es el nombre de tu primera mascota?</option>
             <option value="¿Cuál es el nombre de la calle donde creciste?">¿Cuál es el nombre de la calle donde creciste?</option>
             <option value="¿Cuál es el nombre de tu mejor amigo de la infancia?">¿Cuál es el nombre de tu mejor amigo de la infancia?</option>
-            <option value="¿Cuál es el nombre de tu profesor/a de primara favorito/a?">¿Cuál es el nombre de tu profesor/a de primara favorito/a?</option>
           </select>
 
           <input
             name="securityAnswer"
+            placeholder="Tu respuesta secreta"
             value={formData.securityAnswer}
             onChange={handleChange}
             required

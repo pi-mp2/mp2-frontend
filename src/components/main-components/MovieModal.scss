@@ -1,0 +1,92 @@
+/* Fondo semitransparente y difuminado para enfoque en el modal */
+.movie-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Contenedor principal del modal */
+.movie-modal__content {
+  position: relative;
+  background: #111; /* Fondo oscuro por defecto */
+  color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Imagen del póster */
+.movie-modal__image {
+  width: 180px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* ✖ Botón visible y accesible (Heurística 2 y 1) */
+.movie-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: #fff; /* Blanco para buena visibilidad */
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+    color: #ff4d4d; /* Rojo al pasar el cursor */
+  }
+
+  &:focus {
+    outline: 2px solid #ff4d4d;
+  }
+}
+
+/* Versión clara opcional (si tu app tiene modo claro) */
+.light-theme .movie-modal__content {
+  background: #fff;
+  color: #000;
+
+  .movie-modal__close {
+    color: #000;
+
+    &:hover {
+      color: #d32f2f;
+    }
+  }
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Efecto al pasar el cursor sobre tarjetas de películas */
+.movie-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
