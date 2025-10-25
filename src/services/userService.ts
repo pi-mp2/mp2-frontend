@@ -127,7 +127,7 @@ export const resetPasswordWithAnswer = async (
 
 export const getActivityHistory = async (token: string) => {
     const res = await fetch(`${API_URL}/users/activity`, {
-        headers: {Autorization: `Bearer ${token}`},
+        headers: {Authorization: `Bearer ${token}`},
     });
 
     const result = await res.json();

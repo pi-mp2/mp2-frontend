@@ -6,19 +6,18 @@ import './Login.scss';
 const Login: React.FC = () => {
   const navigate = useNavigate();
 
-  // Estados del formulario (visual)
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Modo demo: no llama a ningún servicio ni contexto
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
+    // Heurística 3: Prevención de errores → validación antes del envío
     if (!email || !password) {
       setError('Por favor completa todos los campos.');
       return;
@@ -27,9 +26,10 @@ const Login: React.FC = () => {
     try {
       setLoading(true);
 
-      const result = await loginUser({email, password});
+      const result = await loginUser({ email, password });
 
       if (result.data?.token) {
+        // Heurística 1: Visibilidad del estado del sistema → muestra mensaje al iniciar sesión
         setMessage('Inicio de sesión exitoso. Redirigiendo...');
         setTimeout(() => {
           navigate('/home');
@@ -37,7 +37,7 @@ const Login: React.FC = () => {
       } else {
         setError('Credenciales inválidas. Intenta de nuevo.');
       }
-    } catch (err:any) {
+    } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
     } finally {
       setLoading(false);
@@ -48,7 +48,9 @@ const Login: React.FC = () => {
     <div className="login-wrapper">
       <div className="login-container">
         <h2>Iniciar sesión</h2>
-        <form onSubmit={handleSubmit} className="login-form" autoComplete="off">
+
+        {/* Heurística 6: Reconocer antes que recordar → placeholders claros */}
+        <form onSubmit={handleSubmit} className="login-form" autoComplete="off" aria-label="Formulario de inicio de sesión">
           <input
             type="email"
             placeholder="Correo electrónico"
@@ -64,7 +66,7 @@ const Login: React.FC = () => {
             required
           />
 
-          {/* Enlace demo “¿Olvidaste tu contraseña?” (opcional) */}
+          {/* Heurística 2: Control y libertad del usuario → opción de recuperar cuenta */}
           <div className="login-extras">
             <button
               type="button"
@@ -75,12 +77,16 @@ const Login: React.FC = () => {
             </button>
           </div>
 
-          <button type="submit">Ingresar</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Cargando..." : "Ingresar"}
+          </button>
 
+          {/* Heurística 1: Visibilidad del estado → mensajes claros */}
           {error && <p className="error-message">{error}</p>}
           {message && <p className="success-message">{message}</p>}
         </form>
 
+        {/* Heurística 4: Consistencia → botones y enlaces similares */}
         <p className="signup-redirect">
           ¿No tienes una cuenta?{' '}
           <button
