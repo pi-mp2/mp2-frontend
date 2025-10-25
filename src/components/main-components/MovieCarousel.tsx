@@ -4,10 +4,11 @@ import MovieCard from "./MovieCard";
 import MovieModal from "./MovieModal";
 
 interface Props {
-  category: "recommended" | "latest";
+  category: "recommended" | "latest" | "user";
+  movies?: any[]; // cuando category = "user"
 }
 
-const MovieCarousel: React.FC<Props> = ({ category }) => {
+const MovieCarousel: React.FC<Props> = ({ category, movies }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
@@ -20,19 +21,22 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
     }
   };
 
-  const movies = Array.from({ length: 10 }, (_, i) => ({
-    id: `${category}-${i + 1}`,
-    title: `${
-      category === "recommended" ? "Película Recomendada" : "Película Reciente"
-    } ${i + 1}`,
-    posterUrl: "https://via.placeholder.com/150x225?text=Poster",
-    description: "Una breve descripción de la película para mostrar en el modal.",
-  }));
+  // Si el padre (Home) pasó películas del usuario, úsalas
+  const moviesToShow =
+    category === "user"
+      ? movies || []
+      : Array.from({ length: 10 }, (_, i) => ({
+          id: `${category}-${i + 1}`,
+          title: `${
+            category === "recommended" ? "Película Recomendada" : "Película Reciente"
+          } ${i + 1}`,
+          posterUrl: "https://via.placeholder.com/150x225?text=Poster",
+          description: "Una breve descripción de la película para mostrar en el modal.",
+        }));
 
   return (
     <>
       <div className="movie-carousel">
-        {/* 🔹 Heurística 7: Flexibilidad y eficiencia */}
         <button
           className="scroll-button left"
           onClick={() => scroll("left")}
@@ -42,11 +46,11 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
         </button>
 
         <div className="carousel-container" ref={scrollRef}>
-          {movies.map((movie) => (
+          {moviesToShow.map((movie) => (
             <MovieCard
               key={movie.id}
               title={movie.title}
-              image={movie.posterUrl}
+              image={movie.posterUrl || movie.imageUrl}
               onClick={() => setSelectedMovie(movie)}
             />
           ))}
@@ -61,7 +65,6 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
         </button>
       </div>
 
-      {/* 🔹 Heurística 3: Control y libertad */}
       {selectedMovie && (
         <MovieModal
           movie={selectedMovie}
