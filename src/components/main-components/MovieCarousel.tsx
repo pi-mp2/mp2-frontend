@@ -1,9 +1,11 @@
 import React, { useRef } from "react";
 import "./MovieCarousel.scss";
 import MovieCard from "./MovieCard";
+import type {Movie} from "../../services/moviesService";
 
 interface Props {
     category: "recommended" | "latest";
+    movies: Movie[];
 }
 
 const MovieCarousel: React.FC<Props> = ({ category }) => {

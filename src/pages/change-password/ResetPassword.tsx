@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./ResetPassword.scss";
 import { resetPasswordWithAnswer } from "../../services/userService";
@@ -9,7 +9,7 @@ const ResetPassword: React.FC = () => {
   const email = sp.get("email") || "";
   const securityQuestion = sp.get("question") || "";
 
-  const [securityAnswer, setSecurityAnswer] = useState("");
+  const securityAnswer = sp.get("answer") || "";
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [err, setErr] = useState("");
@@ -44,13 +44,6 @@ const ResetPassword: React.FC = () => {
         <h2>Restablecer contraseña</h2>
         <p className="securityQuestion"><strong>Pregunta secreta:</strong> {securityQuestion}</p>
         <form onSubmit={onSubmit} className="auth-form">
-          <input
-            type="text"
-            placeholder="Tu respuesta"
-            value={securityAnswer}
-            onChange={(e) => setSecurityAnswer(e.target.value)}
-            required
-          />
           <input
             type="password"
             placeholder="Nueva contraseña"
