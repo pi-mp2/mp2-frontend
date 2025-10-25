@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import "./MovieCarousel.scss";
 import MovieCard from "./MovieCard";
-import MovieModal from "./MovieModal"; // 👈 importar el modal
+import MovieModal from "./MovieModal";
 
 interface Props {
   category: "recommended" | "latest";
@@ -9,7 +9,7 @@ interface Props {
 
 const MovieCarousel: React.FC<Props> = ({ category }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [selectedMovie, setSelectedMovie] = useState<any | null>(null); // 👈 estado para la película
+  const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -26,12 +26,13 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
       category === "recommended" ? "Película Recomendada" : "Película Reciente"
     } ${i + 1}`,
     posterUrl: "https://via.placeholder.com/150x225?text=Poster",
-    description: "Una breve descripción de la película para mostrar en el modal.", // 👈 opcional
+    description: "Una breve descripción de la película para mostrar en el modal.",
   }));
 
   return (
     <>
       <div className="movie-carousel">
+        {/* 🔹 Heurística 7: Flexibilidad y eficiencia */}
         <button
           className="scroll-button left"
           onClick={() => scroll("left")}
@@ -39,16 +40,18 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
         >
           &#8249;
         </button>
+
         <div className="carousel-container" ref={scrollRef}>
           {movies.map((movie) => (
             <MovieCard
               key={movie.id}
               title={movie.title}
               image={movie.posterUrl}
-              onClick={() => setSelectedMovie(movie)} // 👈 abre el modal
+              onClick={() => setSelectedMovie(movie)}
             />
           ))}
         </div>
+
         <button
           className="scroll-button right"
           onClick={() => scroll("right")}
@@ -58,7 +61,7 @@ const MovieCarousel: React.FC<Props> = ({ category }) => {
         </button>
       </div>
 
-      {/* 👇 Aquí el modal */}
+      {/* 🔹 Heurística 3: Control y libertad */}
       {selectedMovie && (
         <MovieModal
           movie={selectedMovie}

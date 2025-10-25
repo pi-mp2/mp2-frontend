@@ -6,7 +6,7 @@ import {
   type ProfileData,
   type UpdateData,
 } from "../../services/userService";
-import DeleteAccountModal from "../../components/DeleteAccountModal"; // 🆕 Modal importado
+import DeleteAccountModal from "../../components/DeleteAccountModal";
 
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<Partial<ProfileData>>({
@@ -23,13 +23,8 @@ const Profile: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false); // 🆕 Estado para el modal
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
-  // 🔹 Habilitar edición
-  const editProfile = () => setIsEditing(true);
-  const cancelEdit = () => setIsEditing(false);
-
-  // 🔹 Cargar perfil al montar el componente
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -48,16 +43,14 @@ const Profile: React.FC = () => {
     fetchProfile();
   }, []);
 
-  // 🔹 Manejo de cambios en inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfile((prev) => ({
       ...prev,
-      [name]: name === "age" ? Number(value) : value, // convertir edad a número
+      [name]: name === "age" ? Number(value) : value,
     }));
   };
 
-  // 🔹 Enviar formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -78,37 +71,24 @@ const Profile: React.FC = () => {
       };
 
       await updateUserProfile(updatedProfile, token);
-
-      setProfile({
-        ...profile,
-        updatedAt: new Date(),
-      });
-
+      setProfile({ ...profile, updatedAt: new Date() });
       setMessage("Perfil actualizado correctamente ✅");
       setIsEditing(false);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Error al actualizar el perfil."
-      );
+      setError("Error al actualizar el perfil.");
     }
   };
 
-  // 🧨 Eliminar cuenta
   const handleDeleteAccount = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No se encontró el token.");
-
-      // Aquí puedes usar tu servicio real (o reemplazar con tu API)
       await fetch("https://tuapi.com/api/v1/users/delete", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       localStorage.removeItem("token");
-      window.location.href = "/login"; // Redirige al login tras eliminar la cuenta
+      window.location.href = "/login";
     } catch (err) {
       setError("Error al eliminar la cuenta.");
     }
@@ -118,10 +98,11 @@ const Profile: React.FC = () => {
     <div className="profile-wrapper">
       <div className="profile-container">
         <h2>Mi Perfil</h2>
-        <div className="profile-picture">Foto</div>
 
+        {/* Heurística 4: Consistencia y estándares → mismos estilos que Login */}
         <form className="profile-form" autoComplete="off" onSubmit={handleSubmit}>
-          <button type="button" className="edit-button" onClick={editProfile}>
+          {/* Heurística 2: Control del usuario → puede editar o cancelar */}
+          <button type="button" className="edit-button" onClick={() => setIsEditing(true)}>
             Editar Perfil
           </button>
 
@@ -129,7 +110,6 @@ const Profile: React.FC = () => {
           <input
             type="text"
             name="firstName"
-            className="first-name-input"
             placeholder="Nombre"
             value={profile.firstName ?? ""}
             onChange={handleChange}
@@ -142,19 +122,18 @@ const Profile: React.FC = () => {
             type="text"
             name="lastName"
             placeholder="Apellido"
-            className="last-name-input"
             value={profile.lastName ?? ""}
             onChange={handleChange}
             readOnly={!isEditing}
             required
           />
 
+          {/* Heurística 3: Prevención de errores → campo numérico */}
           <label>Edad:</label>
           <input
             type="number"
             name="age"
             placeholder="Edad"
-            className="age-input"
             value={profile.age ?? 0}
             onChange={handleChange}
             readOnly={!isEditing}
@@ -166,13 +145,13 @@ const Profile: React.FC = () => {
             type="email"
             name="email"
             placeholder="Correo electrónico"
-            className="email-input"
             value={profile.email ?? ""}
             onChange={handleChange}
             readOnly={!isEditing}
             required
           />
 
+          {/* Heurística 6: Reconocer antes que recordar → placeholders descriptivos */}
           <label>Pregunta secreta:</label>
           <input
             type="text"
@@ -201,45 +180,40 @@ const Profile: React.FC = () => {
               type="button"
               className="cancel-edit"
               disabled={!isEditing}
-              onClick={cancelEdit}
+              onClick={() => setIsEditing(false)}
             >
               Cancelar
             </button>
           </div>
 
-        {/* Botón para eliminar cuenta */}
-        <div className="form-buttons">
-        <button
-            type="button"
-            className="delete-account-btn"
-            onClick={() => setShowDeleteModal(true)}
-         >
-            Eliminar cuenta
-        </button>
-        </div>
+          {/* Heurística 2: Libertad del usuario → puede eliminar cuenta */}
+          <div className="form-buttons">
+            <button
+              type="button"
+              className="delete-account-btn"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              Eliminar cuenta
+            </button>
+          </div>
 
-        {error && <p className="error-message">{error}</p>}
-        {message && <p className="success-message">{message}</p>}
+          {/* Heurística 1: Visibilidad → mensajes de estado */}
+          {error && <p className="error-message">{error}</p>}
+          {message && <p className="success-message">{message}</p>}
         </form>
 
-
+        {/* Heurística 5: Ayuda → fechas visibles de cambios */}
         <div className="profile-dates">
           {profile.createdAt && (
-            <p>
-              <strong>Fecha de creación:</strong>{" "}
-              {new Date(profile.createdAt).toLocaleDateString()}
-            </p>
+            <p><strong>Fecha de creación:</strong> {new Date(profile.createdAt).toLocaleDateString()}</p>
           )}
           {profile.updatedAt && (
-            <p>
-              <strong>Última actualización:</strong>{" "}
-              {new Date(profile.updatedAt).toLocaleDateString()}
-            </p>
+            <p><strong>Última actualización:</strong> {new Date(profile.updatedAt).toLocaleDateString()}</p>
           )}
         </div>
       </div>
 
-      {/* 🧩 Modal de confirmación */}
+      {/* Heurística 2: Control → modal de confirmación */}
       {showDeleteModal && (
         <DeleteAccountModal
           onConfirm={handleDeleteAccount}
