@@ -101,10 +101,15 @@ const Profile: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No se encontró el token.");
-      await fetch("https://tuapi.com/api/v1/users/delete", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+      const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+      await fetch(`${API_BASE_URL}/users/delete`, {
+      method: "DELETE",
+      headers: {
+      Authorization: `Bearer ${token}`,
+      },
       });
+
       localStorage.removeItem("token");
       window.location.href = "/login";
     } catch (err) {
