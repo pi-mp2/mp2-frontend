@@ -1,10 +1,12 @@
-// src/services/authService.ts
+
 export interface LoginData {
   email: string;
   password: string;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+
 /**
  * Envía credenciales al backend para iniciar sesión
  * @param data - email y contraseña del usuario
@@ -34,6 +36,7 @@ export const loginUser = async (data: LoginData) => {
   }
 };
 
+
 /**
  * Cierra la sesión del usuario eliminando el token guardado.
  */
@@ -54,5 +57,3 @@ export const logoutUser = async () => {
     console.error("Error al cerrar sesión:", error.message);
   }
 };
-
-

@@ -69,13 +69,22 @@ export const getUserById = async (id: string) => {
     return res.json();
 };
 
+
+/**
+ * Updates the profile of the currently logged-in user.
+ * Cookies (HTTP-only) are automatically sent with the request.
+ *
+ * @param {Partial<UpdateData>} data - The updated profile data.
+ * @returns {Promise<any>} The server response after updating the profile.
+ * @throws {Error} If the request fails or the server returns an error.
+ */
 export const updateUserProfile = async (data: Partial<UpdateData>, token: string) => {
     const res = await fetch(`${API_URL}/users/profile`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
         },
+        credentials: "include",
         body: JSON.stringify(data),
     });
 
@@ -84,10 +93,18 @@ export const updateUserProfile = async (data: Partial<UpdateData>, token: string
     return result;
 };
 
+
+/**
+ * Deletes the account of the currently logged-in user.
+ * Cookies (HTTP-only) are automatically sent with the request.
+ *
+ * @returns {Promise<any>} The server response after deleting the profile.
+ * @throws {Error} If the request fails or the server returns an error.
+ */
 export const deleteUserProfile = async (token: string) => {
     const res = await fetch (`${API_URL}/users/profile`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}`},
+        credentials: "include",
     });
 
     const result = await res.json();
@@ -109,6 +126,16 @@ export const getSecretQuestion = async (email: string) => {
     return result;
 };
 
+
+/**
+ * Resets the password with a security answer.
+ * 
+ * @param email - The required user identifier
+ * @param securityAnswer - The required answer to verify the user identity.
+ * @param newPassword - The password that would be set as new.
+ * @returns {Promise<any>} The server response after updating the password.
+ * @throws {Error} If the request fails or the server returns an error.
+ */
 export const resetPasswordWithAnswer = async (
     email: string,
     securityAnswer: string,
@@ -125,9 +152,17 @@ export const resetPasswordWithAnswer = async (
     return result;
 };
 
+
+/**
+ * Retrieves the activity history of the currently logged-in user.
+ * Cookies (HTTP-only) are automatically sent with the request.
+ *
+ * @returns {Promise<any>} The user's activity history.
+ * @throws {Error} If the request fails or the server returns an error.
+ */
 export const getActivityHistory = async (token: string) => {
     const res = await fetch(`${API_URL}/users/activity`, {
-        headers: {Authorization: `Bearer ${token}`},
+        credentials: "include",
     });
 
     const result = await res.json();
@@ -135,9 +170,18 @@ export const getActivityHistory = async (token: string) => {
     return result;
 }
 
+
+/**
+ * Fetches the profile of the currently logged-in user.
+ * Cookies (HTTP-only) are automatically sent with the request.
+ *
+ * @returns {Promise<ProfileData>} The user's profile data.
+ * @throws {Error} If the request fails or the server returns an error.
+ */
 export const getUserProfile = async (token: string) => {
     const res = await fetch(`${API_URL}/users/profile`, {
-        headers: { Authorization: `Bearer ${token}`},
+        method: "GET",
+        credentials: "include",
     });
 
     const result = await res.json();
