@@ -21,7 +21,7 @@ export default function Home(): JSX.Element {
     // ✅ Verificar si el usuario tiene sesión activa
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/auth/verify`, {
+        const res = await fetch(`${API_URL}/auth/verify`, {
           method: "GET",
           credentials: "include", // 🔥 permite enviar la cookie HTTP-only
         });
@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
     // 🎬 Obtener las películas subidas por el usuario autenticado
     const fetchUserMovies = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/movies/my`, {
+        const res = await fetch(`${API_URL}/movies/my`, {
           method: "GET",
           credentials: "include", // importante para mantener la sesión
         });
