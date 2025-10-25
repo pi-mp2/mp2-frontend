@@ -15,8 +15,8 @@ export interface ProfileData {
     email: string;
     securityQuestion: string;
     securityAnswer: string;
-    createdAt: Date
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface UpdateData {
@@ -24,9 +24,6 @@ export interface UpdateData {
     lastName: string;
     age: number;
     email: string;
-    securityQuestion: string;
-    securityAnswer: string;
-    updatedAt: Date;
 }
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -78,7 +75,7 @@ export const getUserById = async (id: string) => {
  * @returns {Promise<any>} The server response after updating the profile.
  * @throws {Error} If the request fails or the server returns an error.
  */
-export const updateUserProfile = async (data: Partial<UpdateData>, token: string) => {
+export const updateUserProfile = async (data: Partial<UpdateData>) => {
     const res = await fetch(`${API_URL}/users/profile`, {
         method: "PUT",
         headers: {
@@ -101,7 +98,7 @@ export const updateUserProfile = async (data: Partial<UpdateData>, token: string
  * @returns {Promise<any>} The server response after deleting the profile.
  * @throws {Error} If the request fails or the server returns an error.
  */
-export const deleteUserProfile = async (token: string) => {
+export const deleteUserProfile = async () => {
     const res = await fetch (`${API_URL}/users/profile`, {
         method: "DELETE",
         credentials: "include",
@@ -178,7 +175,7 @@ export const getActivityHistory = async (token: string) => {
  * @returns {Promise<ProfileData>} The user's profile data.
  * @throws {Error} If the request fails or the server returns an error.
  */
-export const getUserProfile = async (token: string) => {
+export const getUserProfile = async () => {
     const res = await fetch(`${API_URL}/users/profile`, {
         method: "GET",
         credentials: "include",
