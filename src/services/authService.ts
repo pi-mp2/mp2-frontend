@@ -14,7 +14,7 @@ export const loginUser = async (data: LoginData) => {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
+      credentials: "include", // ⬅️ Envia y recibe cookies
       body: JSON.stringify(data),
     });
 
@@ -28,34 +28,31 @@ export const loginUser = async (data: LoginData) => {
 
     if (!res.ok) throw new Error(result.message || "Error en inicio de sesión.");
 
-    // Guardar token en localStorage
-    if (result.data?.token) {
-      localStorage.setItem("token", result.data.token);
-    }
-
     return result;
-  } catch (error: unknown) {
-    let message = "Error al conectar con el servidor.";
-    if (error instanceof Error && error.message) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
-    } else {
-      try {
-        message = JSON.stringify(error);
-      } catch {
-        // leave default message
-      }
-    }
-    throw new Error(message);
+  } catch (error: any) {
+    throw new Error(error.message || "Error al conectar con el servidor.");
   }
 };
 
 /**
  * Cierra la sesión del usuario eliminando el token guardado.
  */
-export const logoutUser = () => {
-  localStorage.removeItem("token");
+/**
+ * Cierra la sesión del usuario
+ */
+export const logoutUser = async () => {
+  try {
+    // Llama al endpoint de logout del backend
+    await fetch(`${API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include", // Muy importante
+    });
+
+    // Borra posibles restos locales
+    localStorage.removeItem("token");
+  } catch (error: any) {
+    console.error("Error al cerrar sesión:", error.message);
+  }
 };
 
 
