@@ -10,6 +10,7 @@ export default function Home(): JSX.Element {
     setIsAuthenticated(!!token);
   }, []);
 
+  
   return (
     <main className="home" aria-label="Página principal de películas">
       {/* 🔹 Heurística + accesibilidad: visibilidad del estado del sistema */}
