@@ -20,6 +20,8 @@ const Profile: React.FC = () => {
     updatedAt: new Date(),
   });
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -33,6 +35,7 @@ const Profile: React.FC = () => {
 
         const data = await getUserProfile(token);
         setProfile(data);
+        if (data.profileImage) setProfileImage(data.profileImage);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Error al cargar el perfil."
@@ -49,6 +52,20 @@ const Profile: React.FC = () => {
       ...prev,
       [name]: name === "age" ? Number(value) : value,
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewUrl(imageUrl);
+      setProfileImage(imageUrl);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileImage(null);
+    setPreviewUrl(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,6 +85,7 @@ const Profile: React.FC = () => {
         securityQuestion: profile.securityQuestion ?? "",
         securityAnswer: profile.securityAnswer ?? "",
         updatedAt: new Date(),
+        profileImage: profileImage ?? "",
       };
 
       await updateUserProfile(updatedProfile, token);
@@ -99,13 +117,58 @@ const Profile: React.FC = () => {
       <div className="profile-container">
         <h2>Mi Perfil</h2>
 
-        {/* Heurística 4: Consistencia y estándares → mismos estilos que Login */}
-        <form className="profile-form" autoComplete="off" onSubmit={handleSubmit}>
-          {/* Heurística 2: Control del usuario → puede editar o cancelar */}
-          <button type="button" className="edit-button" onClick={() => setIsEditing(true)}>
+        {/* 🔹 Imagen de perfil debajo del título */}
+        <div className="profile-image-container">
+          <img
+            src={previewUrl || profileImage || "/default-avatar.png"}
+            alt={
+              profile.firstName
+                ? `Foto de perfil de ${profile.firstName}`
+                : "Foto de perfil predeterminada"
+            }
+            className="profile-image"
+          />
+
+          {isEditing && (
+            <div className="image-buttons">
+              <label htmlFor="imageUpload" className="upload-label">
+                Cambiar imagen
+              </label>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              {profileImage && (
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="remove-image-btn"
+                >
+                  Quitar imagen
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 🔹 Botón de editar debajo de la imagen */}
+        <div className="edit-profile-section">
+          <button
+            type="button"
+            className="edit-button"
+            onClick={() => setIsEditing(true)}
+          >
             Editar Perfil
           </button>
+        </div>
 
+        <form
+          className="profile-form"
+          autoComplete="off"
+          onSubmit={handleSubmit}
+        >
           <label>Nombre:</label>
           <input
             type="text"
@@ -128,7 +191,6 @@ const Profile: React.FC = () => {
             required
           />
 
-          {/* Heurística 3: Prevención de errores → campo numérico */}
           <label>Edad:</label>
           <input
             type="number"
@@ -151,7 +213,6 @@ const Profile: React.FC = () => {
             required
           />
 
-          {/* Heurística 6: Reconocer antes que recordar → placeholders descriptivos */}
           <label>Pregunta secreta:</label>
           <input
             type="text"
@@ -186,7 +247,6 @@ const Profile: React.FC = () => {
             </button>
           </div>
 
-          {/* Heurística 2: Libertad del usuario → puede eliminar cuenta */}
           <div className="form-buttons">
             <button
               type="button"
@@ -197,23 +257,26 @@ const Profile: React.FC = () => {
             </button>
           </div>
 
-          {/* Heurística 1: Visibilidad → mensajes de estado */}
           {error && <p className="error-message">{error}</p>}
           {message && <p className="success-message">{message}</p>}
         </form>
 
-        {/* Heurística 5: Ayuda → fechas visibles de cambios */}
         <div className="profile-dates">
           {profile.createdAt && (
-            <p><strong>Fecha de creación:</strong> {new Date(profile.createdAt).toLocaleDateString()}</p>
+            <p>
+              <strong>Fecha de creación:</strong>{" "}
+              {new Date(profile.createdAt).toLocaleDateString()}
+            </p>
           )}
           {profile.updatedAt && (
-            <p><strong>Última actualización:</strong> {new Date(profile.updatedAt).toLocaleDateString()}</p>
+            <p>
+              <strong>Última actualización:</strong>{" "}
+              {new Date(profile.updatedAt).toLocaleDateString()}
+            </p>
           )}
         </div>
       </div>
 
-      {/* Heurística 2: Control → modal de confirmación */}
       {showDeleteModal && (
         <DeleteAccountModal
           onConfirm={handleDeleteAccount}

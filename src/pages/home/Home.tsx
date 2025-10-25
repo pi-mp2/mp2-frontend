@@ -11,23 +11,31 @@ export default function Home(): JSX.Element {
   }, []);
 
   return (
-    <div className="home">
-      {/* 🔹 Heurística 1: Mostrar visibilidad del estado del sistema */}
+    <main className="home" aria-label="Página principal de películas">
+      {/* 🔹 Heurística + accesibilidad: visibilidad del estado del sistema */}
       {isAuthenticated ? (
-        <p className="user-status">Bienvenido de nuevo</p>
+        <p className="user-status" role="status">
+          Bienvenido de nuevo
+        </p>
       ) : (
-        <p className="user-status">Explora las películas disponibles</p>
+        <p className="user-status" role="status">
+          Explora las películas disponibles
+        </p>
       )}
 
-      <section className="home-section">
-        <h2 className="section-title">Para ti</h2>
+      <section className="home-section" aria-labelledby="recommended-title">
+        <h2 id="recommended-title" className="section-title">
+          Para ti
+        </h2>
         <MovieCarousel category="recommended" />
       </section>
 
-      <section className="home-section">
-        <h2 className="section-title">Más recientes</h2>
+      <section className="home-section" aria-labelledby="latest-title">
+        <h2 id="latest-title" className="section-title">
+          Más recientes
+        </h2>
         <MovieCarousel category="latest" />
       </section>
-    </div>
+    </main>
   );
 }
