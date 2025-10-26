@@ -13,14 +13,14 @@ import ResetPassword from './pages/change-password/ResetPassword';
 import ForgotPassword from './pages/change-password/ForgotPassword';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-//import MainLayout from './layouts/MainLayout';
 import Landing from './pages/landing/Landing';
 import './App.scss';
 
-/** Demo de ruta protegida basada en localStorage (visual-only) */
-interface ProtectedRouteProps { element: JSX.Element; }
+interface ProtectedRouteProps { 
+  element: JSX.Element; 
+}
 
-export const ProtectedRoute: FC<ProtectedRouteProps> =({ element }) => {
+export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated === undefined) {
@@ -35,28 +35,31 @@ const App: FC = () => {
   
   return (
     <div className="app-container">
-          <Routes>
-            {/* 🔓 Rutas públicas */}
-            <Route element={<PublicLayout />}>
-              <Route index element={<Landing />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/sitemap" element={<ResetPassword />} />
-            </Route>
-            {/* 🔐 Rutas privadas */}
-            {isAuthenticated && (
-              <Route element={<PrivateLayout />}>
-                <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-                <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-              </Route>
-            )}
-            {/* 🔁 Redirección por defecto */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        <Footer />
+      <Navbar /> {/* Navbar siempre visible */}
+      <main className="main-content">
+        <Routes>
+          {/* 🔓 Rutas públicas */}
+          <Route element={<PublicLayout />}>
+            <Route index element={<Landing />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/sitemap" element={<Sitemap />} /> {/* Corregido */}
+          </Route>
+          
+          {/* 🔐 Rutas privadas - Siempre definidas, protegidas por ProtectedRoute */}
+          <Route element={<PrivateLayout />}>
+            <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
+            <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+          </Route>
+          
+          {/* 🔁 Redirección por defecto */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      <Footer />
     </div>
   );
 };
