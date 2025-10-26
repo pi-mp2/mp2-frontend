@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 //import MainLayout from './layouts/MainLayout';
 import Landing from './pages/landing/Landing';
+import TestPlayerPage from './pages/video-player/TestPlayerPage';
 import './App.scss';
 
 /** Demo de ruta protegida basada en localStorage (visual-only) */
@@ -47,6 +48,7 @@ const App: FC = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/sitemap" element={<Sitemap />} />
             <Route path="dashboard" element={<ProtectedRoute element={<Home />} />} />
+            <Route path="/test" element={<TestPlayerPage/>}/>
           </Route>
           {/* 🔹 Redirección por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -23,20 +23,53 @@ interface ProgressState {
 }
 
 const MoviePlayer: React.FC<MoviePlayerProps> = ({url, title, subtitles = []}) => {
-    const playerRef = useRef<any>(null);
-    const ReactPlayerComponent = ReactPlayer as any;
+    const playerRef = useRef<ReactPlayer>(null);
     const [playing, setPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
     const [showSubtitles, setShowSubtitles] = useState(false);
     const [activeLang, setActiveLang] = useState<string | null>(null);
     const [showSubtitleMenu, setShowSubtitleMenu] = useState(false);
+    const [ready, setReady] = useState(false);
+    const [error, setError] =useState<string | null>(null);
 
-    const togglePlay = () => setPlaying(!playing);
+    console.log("url recibida:", url);
+    console.log("Estado ready:", ready);
 
-    const handleProgress = (state: ProgressState) => setProgress(state.played);
+    const togglePlay = () => {
+        if (ready){
+            setPlaying(!playing);
+        }
+    }
 
-    const handleDuration = (duration: number) => setDuration(duration);
+    const handleProgress = (state: ProgressState) => {
+        console.log("Progreso: ", state);
+        setProgress(state.played);
+
+        if (state.loadedSeconds > 0 && duration === 0) {
+            setDuration(state.loadedSeconds)
+        }
+    };
+
+    const handleReady = () => {
+        console.log("Video listo")
+        setReady(true);
+        setError(null);
+        if (playerRef.current) {
+            const internalPlayer = playerRef.current.getInternalPlayer();
+            console.log("Reproductor interno:", internalPlayer); // ← Debug
+        }
+    }
+
+    const handleError = (error: any, data?: any) => {
+        console.error("❌ Error en video:", error, data); // ← Debug
+        setError(`Error cargando video: ${error?.message || 'Error desconocido'}`);
+        setReady(false);
+    };
+
+    const handleStart = () => {
+        console.log("🎬 Video iniciado"); // ← Debug
+    };
 
     const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newProgress = parseFloat(e.target.value);
@@ -63,20 +96,35 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({url, title, subtitles = []}) =
         <div className="movie-player">
             {title && <h2 className="movie-title">{title}</h2>}
 
+            {/* Mostrar error si existe */}
+            {error && (
+                <div className="error-message" style={{
+                    background: '#fee', 
+                    color: '#c33', 
+                    padding: '10px', 
+                    borderRadius: '4px',
+                    marginBottom: '10px'
+                }}>
+                    ❌ {error}
+                </div>
+            )}
+
             <div id="video-container" className="video-container">
-                <ReactPlayerComponent
+                <ReactPlayer
                     ref={playerRef}
                     url={url}
-                    playing={playing}
+                    playing={playing && ready}
                     controls={false}
                     width="100%"
                     height="100%"
                     onProgress={handleProgress as any}
-                    onDuration={handleDuration}
-
+                    onReady={handleReady}
+                    onStart={handleStart}
                     config={{
                         file: {
-                            attributes: {crossOrigin: "anonymous"},
+                            attributes: {crossOrigin: "anonymous",
+                                preload: "metadata"
+                            },
                             tracks: subtitles.map((track) => ({
                                 kind: "subtitles",
                                 src: track.src,
@@ -87,8 +135,23 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({url, title, subtitles = []}) =
                     } as any}
                 />
 
+                {!ready && !error && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        background: 'rgba(0,0,0,0.8)',
+                        color: 'white',
+                        padding: '20px',
+                        borderRadius: '8px'
+                    }}>
+                        ⏳ Cargando video...
+                    </div>
+                )}
+
                 {/* Botón central */}
-                <button onClick={togglePlay} className="play-btn">
+                <button onClick={togglePlay} className="play-btn" disabled={!ready}>
                     {playing ? <Pause size={60}/> : <Play size={60}/>}
                 </button>
 
