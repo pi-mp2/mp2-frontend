@@ -1,20 +1,20 @@
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import logo from "../assets/logo.jpeg";
 import "./Navbar.scss";
 
 export default function Navbar(): JSX.Element {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, loading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
-  // Determinar si estamos en una ruta publica o privada
-  const isPrivateRoute = location.pathname === '/home' || location.pathname === '/profile';
+  if (loading) {
+    return <div>Cargando navbar...</div>;
+  }
 
   return (
     <header className="navbar">
@@ -32,11 +32,7 @@ export default function Navbar(): JSX.Element {
           {isAuthenticated ? (
             <>
               {/* Para usuario autenticado */}
-              <NavLink 
-                to={isPrivateRoute ? "/home" : "/"} 
-                end 
-                className="navlink"
-              >
+              <NavLink to="/home" end className="navlink">
                 Inicio
               </NavLink>
               <NavLink to="/profile" className="navlink">
