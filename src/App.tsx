@@ -1,5 +1,6 @@
 import React, { useEffect, type FC, type JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/authContext';
 import Home from './pages/home/Home';
 import AboutUs from './pages/about/AboutUs';
 import Login from './pages/login/Login';
@@ -16,16 +17,19 @@ import './App.scss';
 
 /** Demo de ruta protegida basada en localStorage (visual-only) */
 interface ProtectedRouteProps { element: JSX.Element; }
-const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
-  const token = localStorage.getItem('token');
-  return token ? element : <Navigate to="/login" replace />;
-};
+
+export const ProtectedRoute: FC<ProtectedRouteProps> =({ element }) => {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated === undefined) {
+    return <div>Cargando sesión...</div>
+  }
+
+  return isAuthenticated ? element : <Navigate to="/login" replace/>
+}
 
 const App: FC = () => {
-  useEffect(() => {
-    localStorage.getItem('token'); // placeholder
-  }, []);
-
+  
   return (
     <div className="app-container">
       <Navbar />
