@@ -1,4 +1,4 @@
-import React, { useEffect, type FC, type JSX } from 'react';
+import React, { type FC, type JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/authContext';
 import PublicLayout from './layouts/PublicLayOut';
@@ -21,21 +21,25 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-  if (isAuthenticated === undefined) {
-    return <div>Cargando sesión...</div>
+  if (loading) {
+    return <div>Cargando sesión...</div>;
   }
 
-  return isAuthenticated ? element : <Navigate to="/login" replace/>
+  return isAuthenticated ? element : <Navigate to="/login" replace />;
 }
 
 const App: FC = () => {
-  const { isAuthenticated } = useAuth();
-  
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <div>Cargando aplicación...</div>;
+  }
+
   return (
     <div className="app-container">
-      <Navbar /> {/* Navbar siempre visible */}
+      <Navbar />
       <main className="main-content">
         <Routes>
           {/* 🔓 Rutas públicas */}
@@ -46,10 +50,10 @@ const App: FC = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/sitemap" element={<Sitemap />} /> {/* Corregido */}
+            <Route path="/sitemap" element={<Sitemap />} />
           </Route>
           
-          {/* 🔐 Rutas privadas - Siempre definidas, protegidas por ProtectedRoute */}
+          {/* 🔐 Rutas privadas */}
           <Route element={<PrivateLayout />}>
             <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
             <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
@@ -63,4 +67,5 @@ const App: FC = () => {
     </div>
   );
 };
+
 export default App;
