@@ -33,6 +33,13 @@ export default function Navbar(): JSX.Element {
               <NavLink to="/profile" className="navlink">
                 Perfil
               </NavLink>
+
+              {/* Mostrar el correo del usuario si existe*/}
+              {user && (
+                <span className="navlink navlink--user">
+                  {user.email}
+                </span>
+              )}
               <button onClick={handleLogout} className="navlink navlink--button">
                 Cerrar sesión
               </button>

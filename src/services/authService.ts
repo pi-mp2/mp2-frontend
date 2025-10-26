@@ -40,9 +40,6 @@ export const loginUser = async (data: LoginData) => {
 /**
  * Cierra la sesión del usuario eliminando el token guardado.
  */
-/**
- * Cierra la sesión del usuario
- */
 export const logoutUser = async () => {
   try {
     // Llama al endpoint de logout del backend
@@ -57,3 +54,17 @@ export const logoutUser = async () => {
     console.error("Error al cerrar sesión:", error.message);
   }
 };
+
+/**
+ * Checks if the user is authenticated.
+ * 
+ * @returns Serever response checking the user state.
+ */
+export const checkAuthStatus = async () => {
+  const res = await fetch(`${API_URL}/auth/verify`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if(!res.ok) throw new Error("No autenticado");
+  return res.json();
+}
