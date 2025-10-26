@@ -18,7 +18,7 @@ interface ProtectedRouteProps {
   element: JSX.Element; 
 }
 
-export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
+const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated === undefined) {
@@ -28,52 +28,55 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
   return isAuthenticated ? element : <Navigate to="/login" replace/>;
 }
 
-export const PublicRoute: FC<ProtectedRouteProps> = ({ element }) => {
+const PublicRoute: FC<ProtectedRouteProps> = ({ element }) => {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated === undefined) {
     return <div>Cargando sesión...</div>
   }
 
-  // Si el usuario está autenticado, redirigir al home
   return !isAuthenticated ? element : <Navigate to="/home" replace/>;
 }
 
 const App: FC = () => {
   const { isAuthenticated } = useAuth();
 
+  // Si aún está verificando la autenticación, muestra loading
+  if (isAuthenticated === undefined) {
+    return <div>Cargando aplicación...</div>;
+  }
+
   return (
     <div className="app-container">
       <Navbar />
       <main className="main-content">
         <Routes>
-          {/* 🔹 RUTAS PÚBLICAS (solo para usuarios NO autenticados) */}
+          {/* RUTA RAIZ - comportamiento directo */}
           <Route path="/" element={
-            <PublicRoute element={<Landing />} />
+            isAuthenticated ? <Home /> : <Landing />
           } />
+          
+          {/* RUTAS PÚBLICAS */}
           <Route path="/login" element={
-            <PublicRoute element={<Login />} />
+            isAuthenticated ? <Navigate to="/home" replace /> : <Login />
           } />
           <Route path="/signup" element={
-            <PublicRoute element={<Signup />} />
+            isAuthenticated ? <Navigate to="/home" replace /> : <Signup />
           } />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/sitemap" element={<Sitemap />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* 🔹 RUTAS PROTEGIDAS (solo para usuarios autenticados) */}
+          {/* RUTAS PROTEGIDAS */}
           <Route path="/home" element={
-            <ProtectedRoute element={<Home />} />
+            isAuthenticated ? <Home /> : <Navigate to="/login" replace />
           } />
           <Route path="/profile" element={
-            <ProtectedRoute element={<Profile />} />
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute element={<Home />} />
+            isAuthenticated ? <Profile /> : <Navigate to="/login" replace />
           } />
 
-          {/* 🔹 Redirección por defecto */}
+          {/* Redirección por defecto */}
           <Route path="*" element={
             <Navigate to={isAuthenticated ? "/home" : "/"} replace />
           } />

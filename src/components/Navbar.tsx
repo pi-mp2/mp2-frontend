@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import logo from "../assets/logo.jpeg";
 import "./Navbar.scss";
@@ -6,17 +6,11 @@ import "./Navbar.scss";
 export default function Navbar(): JSX.Element {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-
-  // No mostrar navbar en páginas de login/signup si está autenticado
-  if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/signup')) {
-    return <></>;
-  }
 
   return (
     <header className="navbar">
