@@ -1,0 +1,125 @@
+.movie-player {
+  background: #000;
+  color: #fff;
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+
+  .movie-title {
+    color: #ff3c3c;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  .video-container {
+    position: relative;
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  .play-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    svg {
+      color: white;
+      filter: drop-shadow(0 0 4px #000);
+    }
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  .controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    gap: 0.5rem;
+
+    .progress-bar {
+      flex: 1;
+      accent-color: #ff3c3c;
+      cursor: pointer;
+    }
+
+    .subtitle-container {
+      position: relative;
+
+      .subtitle-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #ccc;
+        &.active {
+          color: #ff3c3c;
+        }
+        &:hover {
+          color: #fff;
+        }
+      }
+
+      .subtitle-menu {
+        position: absolute;
+        bottom: 120%;
+        right: 0;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid #555;
+        border-radius: 8px;
+        padding: 0.3rem;
+        min-width: 130px;
+        display: flex;
+        flex-direction: column;
+        button {
+          background: none;
+          border: none;
+          color: #ddd;
+          padding: 0.3rem 0.5rem;
+          text-align: left;
+          cursor: pointer;
+          border-radius: 4px;
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          &.active {
+            background: #ff3c3c;
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    .fullscreen-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+
+  .time {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 0.5rem;
+  }
+}
