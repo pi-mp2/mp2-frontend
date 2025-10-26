@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/authService';
 import './Login.scss';
+import { useAuth } from '../../contexts/authContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -25,18 +27,17 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-
-      const result = await loginUser({ email, password });
-
-      if (result.data?.token) {
-        // Heurística 1: Visibilidad del estado del sistema → muestra mensaje al iniciar sesión
-        setMessage('Inicio de sesión exitoso. Redirigiendo...');
-        setTimeout(() => {
-          navigate('/home');
-        }, 1500);
-      } else {
-        setError('Credenciales inválidas. Intenta de nuevo.');
-      }
+      
+      // Usa la función login del contexto en lugar de loginUser directamente
+      await login(email, password);
+      
+      setMessage('Inicio de sesión exitoso. Redirigiendo...');
+      
+      // Espera un poco para que el contexto se actualice completamente
+      setTimeout(() => {
+        navigate('/home');
+      }, 1000);
+      
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
     } finally {
@@ -57,6 +58,7 @@ const Login: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
           <input
             type="password"
@@ -64,6 +66,7 @@ const Login: React.FC = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={loading}
           />
 
           {/* Heurística 2: Control y libertad del usuario → opción de recuperar cuenta */}
@@ -72,6 +75,7 @@ const Login: React.FC = () => {
               type="button"
               className="link-button"
               onClick={() => navigate('/forgot-password')}
+              disabled={loading}
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -93,6 +97,7 @@ const Login: React.FC = () => {
             type="button"
             className="link-button"
             onClick={() => navigate('/signup')}
+            disabled={loading}
           >
             Regístrate
           </button>
