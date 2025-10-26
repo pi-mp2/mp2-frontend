@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import { loginUser, logoutUser } from "../services/authService";
+import { loginUser, logoutUser, checkAuthStatus } from "../services/authService";
 
 interface User {
   email: string;
@@ -24,23 +24,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Verificar si hay token guardado al recargar
-    const token = localStorage.getItem("token");
-    if (token) setIsAuthenticated(true);
+    // Verificar sesión activa mediante cookie HTTP-only
+    const verifySession = async () => {
+      try {
+        const data = await checkAuthStatus();
+        setUser(data.user);
+        setIsAuthenticated(true);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    };
+    
+    verifySession();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const result = await loginUser({ email, password });
-    if (result?.token) {
-      setIsAuthenticated(true);
-      setUser({ email });
+    try {
+      await loginUser({email, password});
+      const verifiedUser = await checkAuthStatus();
+      if(verifiedUser) {
+        setIsAuthenticated(true);
+        setUser(verifiedUser);
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      throw error;
     }
   };
 
-  const logout = () => {
-    logoutUser();
-    setIsAuthenticated(false);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await logoutUser();
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error)
+    }
   };
 
   return (

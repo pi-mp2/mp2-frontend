@@ -8,10 +8,13 @@ const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [securityQuestion, setSecurityQuestion] = useState("");
+  const [securityAnswer, setSecurityAnswer] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"email" | "question">("email");
 
-  const onSubmit = async (e: React.FormEvent) => {
+  /* Paso 1: obtener pregunta secreta */
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr("");
     setLoading(true);
@@ -19,22 +22,46 @@ const ForgotPassword: React.FC = () => {
     try {
       const data = await getSecretQuestion(email);
       setSecurityQuestion(data.securityQuestion);
-    } catch (error:any) {
+      setStep("question");
+    } catch (error: any) {
       setErr(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const goToReset = () => {
-    navigate(`/reset-password?email=${encodeURIComponent(email)}&question=${encodeURIComponent(securityQuestion)}`)
-  }
+  const handleAnswerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/forgot-password/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, securityAnswer }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error (data.message || "Respuesta incorrecta");
+
+      navigate(`/reset-password?token=${encodeURIComponent(email)}&answer=${encodeURIComponent(securityAnswer)}`);
+    } catch(error: any) {
+      setErr(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
         <h2>Recuperar contraseña</h2>
-        <form onSubmit={onSubmit} className="auth-form">
+
+        {/* Paso 1: ingresar correo*/}
+        {step === "email" && (
+          <form onSubmit={handleEmailSubmit} className="auth-form">
           <input
             type="email"
             placeholder="Correo electrónico"
@@ -44,13 +71,24 @@ const ForgotPassword: React.FC = () => {
           />
           <button type="submit" disabled={loading}>{loading ? "Buscando..." : "Enviar"}</button>
           {err && <p className="error-message">{err}</p>}
-        </form>
+        </form>)}
 
-        {securityQuestion && (
-          <div className="auth-question">
+        {/* Paso 2: Responder pregunta secreta*/}
+        {step === "question" && (
+          <form onSubmit={handleAnswerSubmit} className="auth-form">
             <p><strong>Pregunta secreta:</strong> {securityQuestion}</p>
-            <button onClick={goToReset}>Responder y cambiar contraseña</button>
-          </div>
+            <input
+              type="password"
+              placeholder="Tu respuesta secreta"
+              value={securityAnswer}
+              onChange={(e) => setSecurityAnswer(e.target.value)}
+              required
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? "Verificando..." : "Verificar respuesta"}
+            </button>
+            {err && <p className="error-message">{err}</p>}
+          </form>
         )}
       </div>
     </div>
