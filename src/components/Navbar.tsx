@@ -1,25 +1,31 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import logo from "../assets/logo.jpeg";
 import "./Navbar.scss";
 
 export default function Navbar(): JSX.Element {
-  const { isAuthenticated, logout, user, loading } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  if (loading) {
-    return <div>Cargando navbar...</div>;
+  // No mostrar navbar en páginas de login/signup si está autenticado
+  if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/signup')) {
+    return <></>;
   }
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <Link to="/" className="navbar__brand" aria-label="Ir a inicio">
+        <Link 
+          to={isAuthenticated ? "/home" : "/"} 
+          className="navbar__brand" 
+          aria-label="Ir a inicio"
+        >
           <img
             src={logo}
             alt="Logo de Movie Star"
@@ -31,7 +37,6 @@ export default function Navbar(): JSX.Element {
         <nav className="navbar__links" aria-label="Navegación principal">
           {isAuthenticated ? (
             <>
-              {/* Para usuario autenticado */}
               <NavLink to="/home" end className="navlink">
                 Inicio
               </NavLink>
@@ -50,9 +55,11 @@ export default function Navbar(): JSX.Element {
             </>
           ) : (
             <>
-              {/* Para usuario no autenticado */}
               <NavLink to="/" end className="navlink">
                 Inicio
+              </NavLink>
+              <NavLink to="/about" className="navlink">
+                Nosotros
               </NavLink>
               <NavLink to="/login" className="navlink">
                 Iniciar sesión

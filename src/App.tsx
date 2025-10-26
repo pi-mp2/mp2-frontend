@@ -1,8 +1,6 @@
-import React, { type FC, type JSX } from 'react';
+import React, { type FC } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/authContext';
-import PublicLayout from './layouts/PublicLayOut';
-import PrivateLayout from './layouts/PrivateLayOut';
 import Home from './pages/home/Home';
 import AboutUs from './pages/about/AboutUs';
 import Login from './pages/login/Login';
@@ -21,46 +19,64 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  if (loading) {
-    return <div>Cargando sesión...</div>;
+  if (isAuthenticated === undefined) {
+    return <div>Cargando sesión...</div>
   }
 
-  return isAuthenticated ? element : <Navigate to="/login" replace />;
+  return isAuthenticated ? element : <Navigate to="/login" replace/>;
+}
+
+export const PublicRoute: FC<ProtectedRouteProps> = ({ element }) => {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated === undefined) {
+    return <div>Cargando sesión...</div>
+  }
+
+  // Si el usuario está autenticado, redirigir al home
+  return !isAuthenticated ? element : <Navigate to="/home" replace/>;
 }
 
 const App: FC = () => {
-  const { loading } = useAuth();
-
-  if (loading) {
-    return <div>Cargando aplicación...</div>;
-  }
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="app-container">
       <Navbar />
       <main className="main-content">
         <Routes>
-          {/* 🔓 Rutas públicas */}
-          <Route element={<PublicLayout />}>
-            <Route index element={<Landing />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/sitemap" element={<Sitemap />} />
-          </Route>
-          
-          {/* 🔐 Rutas privadas */}
-          <Route element={<PrivateLayout />}>
-            <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-            <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-          </Route>
-          
-          {/* 🔁 Redirección por defecto */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* 🔹 RUTAS PÚBLICAS (solo para usuarios NO autenticados) */}
+          <Route path="/" element={
+            <PublicRoute element={<Landing />} />
+          } />
+          <Route path="/login" element={
+            <PublicRoute element={<Login />} />
+          } />
+          <Route path="/signup" element={
+            <PublicRoute element={<Signup />} />
+          } />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/sitemap" element={<Sitemap />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* 🔹 RUTAS PROTEGIDAS (solo para usuarios autenticados) */}
+          <Route path="/home" element={
+            <ProtectedRoute element={<Home />} />
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute element={<Profile />} />
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute element={<Home />} />
+          } />
+
+          {/* 🔹 Redirección por defecto */}
+          <Route path="*" element={
+            <Navigate to={isAuthenticated ? "/home" : "/"} replace />
+          } />
         </Routes>
       </main>
       <Footer />
