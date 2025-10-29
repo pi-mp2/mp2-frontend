@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.scss";
 import MovieCarousel from "../../components/main-components/MovieCarousel";
+import { checkAuthStatus } from "../../services/authService";
+import axiosClient from "../../services/axiosClient";
 
 interface Movie {
   _id: string;
@@ -10,60 +13,42 @@ interface Movie {
   category: string;
 }
 
+import type { JSX } from "react";
+
 export default function Home(): JSX.Element {
+  const navigate = useNavigate();
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userMovies, setUserMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL;
-
-    // ✅ Verificar si el usuario tiene sesión activa
-    const checkAuth = async () => {
+    const verifyAndFetch = async () => {
       try {
-        const res = await fetch(`${API_URL}/auth/verify`, {
-          method: "GET",
-          credentials: "include", // 🔥 permite enviar la cookie HTTP-only
-        });
+        // ✅ Verificar si el token/cookie es válido
+        await checkAuthStatus();
+        setIsAuthenticated(true);
 
-        if (res.ok) {
-          setIsAuthenticated(true);
-          await fetchUserMovies(); // Cargamos películas del usuario
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (err) {
-        console.error("Error verificando sesión:", err);
+        // 🎬 Cargar las películas del usuario autenticado
+        const { data } = await axiosClient.get<Movie[]>("/movies/my");
+        setUserMovies(data);
+      } catch (err: any) {
+        console.error("❌ Error verificando sesión o cargando películas:", err?.message || err);
         setIsAuthenticated(false);
+        // Redirige limpio si no hay sesión
+        navigate("/login", { replace: true });
       } finally {
         setLoading(false);
       }
     };
 
-    // 🎬 Obtener las películas subidas por el usuario autenticado
-    const fetchUserMovies = async () => {
-      try {
-        const res = await fetch(`${API_URL}/movies/my`, {
-          method: "GET",
-          credentials: "include", // importante para mantener la sesión
-        });
-
-        if (!res.ok) throw new Error("Error al obtener las películas");
-        const data = await res.json();
-        setUserMovies(data);
-      } catch (err) {
-        console.error("Error al cargar películas del usuario:", err);
-      }
-    };
-
-    checkAuth();
-  }, []);
+    verifyAndFetch();
+  }, [navigate]);
 
   if (loading) return <p>Cargando...</p>;
 
   return (
     <main className="home" aria-label="Página principal de películas">
-      {/* Estado de sesión */}
       {isAuthenticated ? (
         <p className="user-status" role="status">
           Bienvenido de nuevo 👋
@@ -74,7 +59,6 @@ export default function Home(): JSX.Element {
         </p>
       )}
 
-      {/* 🔹 Carrusel con las películas del usuario */}
       {isAuthenticated && userMovies.length > 0 && (
         <section className="home-section" aria-labelledby="user-movies-title">
           <h2 id="user-movies-title" className="section-title">
@@ -84,7 +68,6 @@ export default function Home(): JSX.Element {
         </section>
       )}
 
-      {/* Carruseles generales */}
       <section className="home-section" aria-labelledby="recommended-title">
         <h2 id="recommended-title" className="section-title">
           Para ti

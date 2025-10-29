@@ -1,28 +1,37 @@
+// src/components/main-components/MovieCarousel.tsx
 import React, { useRef, useState } from "react";
 import "./MovieCarousel.scss";
 import MovieCard from "./MovieCard";
 import MovieModal from "./MovieModal";
 
+interface MovieLike {
+  _id?: string;
+  id?: string | number;
+  title: string;
+  imageUrl?: string;
+  posterUrl?: string;
+  description?: string;
+}
+
 interface Props {
   category: "recommended" | "latest" | "user";
-  movies?: any[]; // cuando category = "user"
+  movies?: MovieLike[];
 }
 
 const MovieCarousel: React.FC<Props> = ({ category, movies }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<MovieLike | null>(null);
 
   const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount =
-        direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
-      scrollRef.current.scrollTo({ left: scrollAmount, behavior: "smooth" });
-    }
+    if (!scrollRef.current) return;
+    const { scrollLeft, clientWidth } = scrollRef.current;
+    const next =
+      direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+    scrollRef.current.scrollTo({ left: next, behavior: "smooth" });
   };
 
-  // Si el padre (Home) pasó películas del usuario, úsalas
-  const moviesToShow =
+  // Si Home pasó películas del usuario, úsalas; si no, crea mock
+  const moviesToShow: MovieLike[] =
     category === "user"
       ? movies || []
       : Array.from({ length: 10 }, (_, i) => ({
@@ -30,7 +39,7 @@ const MovieCarousel: React.FC<Props> = ({ category, movies }) => {
           title: `${
             category === "recommended" ? "Película Recomendada" : "Película Reciente"
           } ${i + 1}`,
-          posterUrl: "https://via.placeholder.com/150x225?text=Poster",
+          posterUrl: `https://placehold.co/150x225?text=Poster+${i + 1}`,
           description: "Una breve descripción de la película para mostrar en el modal.",
         }));
 
@@ -46,14 +55,23 @@ const MovieCarousel: React.FC<Props> = ({ category, movies }) => {
         </button>
 
         <div className="carousel-container" ref={scrollRef}>
-          {moviesToShow.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              title={movie.title}
-              image={movie.posterUrl || movie.imageUrl}
-              onClick={() => setSelectedMovie(movie)}
-            />
-          ))}
+          {moviesToShow.map((movie, idx) => {
+            const image =
+              (movie.imageUrl && movie.imageUrl.trim()) ||
+              (movie.posterUrl && movie.posterUrl.trim()) ||
+              `https://placehold.co/150x225?text=Poster+${idx + 1}`;
+
+            const key = movie._id ?? movie.id ?? `${category}-${idx}`;
+
+            return (
+              <MovieCard
+                key={key}
+                title={movie.title}
+                image={image}
+                onClick={() => setSelectedMovie(movie)}
+              />
+            );
+          })}
         </div>
 
         <button
@@ -65,9 +83,17 @@ const MovieCarousel: React.FC<Props> = ({ category, movies }) => {
         </button>
       </div>
 
+      {/* ✅ MovieModal con tipado correcto */}
       {selectedMovie && (
         <MovieModal
-          movie={selectedMovie}
+          movie={{
+            title: selectedMovie.title,
+            posterUrl:
+              selectedMovie.posterUrl ||
+              selectedMovie.imageUrl ||
+              "https://placehold.co/150x225?text=Poster",
+            description: selectedMovie.description,
+          }}
           onClose={() => setSelectedMovie(null)}
         />
       )}

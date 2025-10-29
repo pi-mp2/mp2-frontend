@@ -1,63 +1,106 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/authContext";
 import logo from "../assets/logo.jpeg";
 import "./Navbar.scss";
 
-export default function Navbar(): JSX.Element {
-  const { isAuthenticated, logout, user } = useAuth();
-  const navigate = useNavigate();
+const cls = (...c: Array<string | false | undefined>) => c.filter(Boolean).join(" ");
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+export default function Navbar() {
+  const navigate = useNavigate();
+  const { user, logout, isAuth, loading } = useAuth();
+
+  const [openMobile, setOpenMobile] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setOpenProfile(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  const displayName =
+    user?.username || user?.name || (user?.email ? user.email.split("@")[0] : "U");
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <Link to="/" className="navbar__brand" aria-label="Ir a inicio">
-          <img
-            src={logo}
-            alt="Logo de Movie Star"
-            className="brand__logo" //
-          />
-          <span className="brand__name">Movie Star</span>
-        </Link>
+        <div className="navbar__left">
+          <button className="navbar__burger" aria-label="Abrir menú" onClick={() => setOpenMobile((v) => !v)}>
+            ☰
+          </button>
 
-        <nav className="navbar__links" aria-label="Navegación principal">
-          {isAuthenticated ? (
-            <>
-              <NavLink to="/home" end className="navlink">
-                Inicio
-              </NavLink>
-              <NavLink to="/profile" className="navlink">
+          <Link to="/" className="navbar__brand" onClick={() => setOpenMobile(false)}>
+            <img src={logo} alt="MP2" />
+            <span>MP2</span>
+          </Link>
+
+          <nav className={cls("navbar__links", openMobile && "is-open")}>
+            <NavLink to={isAuth ? "/home" : "/"} className="navlink" onClick={() => setOpenMobile(false)}>
+              Home
+            </NavLink>
+
+            {!loading && !isAuth && (
+              <>
+                <NavLink to="/login" className="navlink" onClick={() => setOpenMobile(false)}>
+                  Iniciar sesión
+                </NavLink>
+                <NavLink to="/signup" className="navlink" onClick={() => setOpenMobile(false)}>
+                  Registro
+                </NavLink>
+              </>
+            )}
+
+            {!loading && isAuth && (
+              <NavLink to="/profile" className="navlink" onClick={() => setOpenMobile(false)}>
                 Perfil
               </NavLink>
+            )}
+          </nav>
+        </div>
 
-              {/* Mostrar el correo del usuario si existe*/}
-              {user && (
-                <span className="navlink navlink--user">
-                  {user.email}
-                </span>
-              )}
-              <button onClick={handleLogout} className="navlink navlink--button">
-                Cerrar sesión
+        <div className="navbar__right">
+          {!loading && isAuth ? (
+            <div className="profile" ref={profileRef}>
+              <button
+                className="profile__btn"
+                onClick={() => setOpenProfile((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={openProfile}
+                title={displayName}
+              >
+                <div className="avatar">{(displayName[0] || "U").toUpperCase()}</div>
+                <span className="profile__name">{displayName}</span>
+                <span className="chev">▾</span>
               </button>
-            </>
+
+              {openProfile && (
+                <div className="profile__menu" role="menu">
+                  <Link to="/profile" className="profile__item" onClick={() => setOpenProfile(false)}>
+                    Ver perfil
+                  </Link>
+                  <button
+                    className="profile__item profile__logout"
+                    onClick={async () => {
+                      setOpenProfile(false);
+                      await logout();
+                      navigate("/", { replace: true });
+                    }}
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
-            <>
-              <NavLink to="/" end className="navlink">
-                Inicio
-              </NavLink>
-              <NavLink to="/login" className="navlink">
-                Iniciar sesión
-              </NavLink>
-              <NavLink to="/signup" className="navlink navlink--outlined">
-                Registrarse
-              </NavLink>
-            </>
+            <div style={{ width: 12 }} />
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );

@@ -1,77 +1,97 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import type { ReactNode } from "react";
-import { loginUser, logoutUser, checkAuthStatus } from "../services/authService";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axiosClient from "../services/axiosClient";
 
-interface User {
-  email: string;
-}
+type User = {
+  id?: string;
+  username?: string;
+  name?: string;
+  email?: string;
+};
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
+  isAuth: boolean | null; // null = no verificado aún
+  loading: boolean;
+  login: (payload: { email: string; password: string }) => Promise<void>;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
+};
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuth: null,
+  loading: true,
+  login: async () => {},
+  logout: async () => {},
+  refresh: async () => {},
+});
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // 🔍 Verificar sesión al cargar la app
   useEffect(() => {
-    // Verificar sesión activa mediante cookie HTTP-only
-    const verifySession = async () => {
+    const verify = async () => {
       try {
-        const data = await checkAuthStatus();
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } catch (error) {
-        setIsAuthenticated(false);
+        const { data } = await axiosClient.get("/auth/verify");
+        console.log("✅ Verificación exitosa:", data);
+        setUser(data?.user ?? null);
+        setIsAuth(true);
+      } catch (error: any) {
+        console.warn("❌ No autenticado:", error.response?.status);
         setUser(null);
+        setIsAuth(false);
+      } finally {
+        setLoading(false);
       }
     };
-    
-    verifySession();
+    verify();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  // 🔐 Iniciar sesión
+  const login: AuthContextType["login"] = async ({ email, password }) => {
+    setLoading(true);
     try {
-      await loginUser({email, password});
-      const verifiedUser = await checkAuthStatus();
-      if(verifiedUser) {
-        setIsAuthenticated(true);
-        setUser(verifiedUser);
-      }
+      const { data } = await axiosClient.post("/auth/login", { email, password });
+      setUser(data?.user ?? null);
+      setIsAuth(true);
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      setIsAuth(false);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = async () => {
+  // 🚪 Cerrar sesión
+  const logout: AuthContextType["logout"] = async () => {
     try {
-      await logoutUser();
-      setIsAuthenticated(false);
+      await axiosClient.post("/auth/logout");
+    } catch {}
+    localStorage.removeItem("token");
+    setUser(null);
+    setIsAuth(false);
+  };
+
+  // 🔄 Refrescar sesión
+  const refresh: AuthContextType["refresh"] = async () => {
+    try {
+      const { data } = await axiosClient.get("/auth/verify");
+      setUser(data?.user ?? null);
+      setIsAuth(true);
+    } catch {
       setUser(null);
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error)
+      setIsAuth(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuth, loading, login, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
-  return ctx;
-};
+export const useAuth = () => useContext(AuthContext);

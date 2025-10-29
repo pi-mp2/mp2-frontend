@@ -1,57 +1,71 @@
-import React, { useEffect, type FC, type JSX } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/authContext';
-import Home from './pages/home/Home';
-import AboutUs from './pages/about/AboutUs';
-import Login from './pages/login/Login';
-import Signup from './pages/signup';
-import Profile from './pages/profile/Profile';
-import Sitemap from './pages/sitemap/Sitemap';
-import ResetPassword from './pages/change-password/ResetPassword';
-import ForgotPassword from './pages/change-password/ForgotPassword';
-import Footer from './components/Footer';
-import Navbar from './components/Navbar';
-//import MainLayout from './layouts/MainLayout';
-import Landing from './pages/landing/Landing';
-import './App.scss';
+import type { FC, JSX } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./contexts/authContext";
 
-/** Demo de ruta protegida basada en localStorage (visual-only) */
+// Páginas
+import Home from "./pages/home/Home";
+import AboutUs from "./pages/about/AboutUs";
+import Login from "./pages/login/Login";
+import Signup from "./pages/signup";
+import Profile from "./pages/profile/Profile";
+import Sitemap from "./pages/sitemap/Sitemap";
+import ResetPassword from "./pages/change-password/ResetPassword";
+import ForgotPassword from "./pages/change-password/ForgotPassword";
+import Landing from "./pages/landing/Landing";
+
+// Comunes
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+import "./App.scss";
+
 interface ProtectedRouteProps { element: JSX.Element; }
-
-export const ProtectedRoute: FC<ProtectedRouteProps> =({ element }) => {
-  const { isAuthenticated } = useAuth();
-
-  if (isAuthenticated === undefined) {
-    return <div>Cargando sesión...</div>
+const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
+  const { isAuth, loading } = useAuth();
+  if (loading || isAuth === null) {
+    return <div style={{ padding: 16 }}>Cargando sesión...</div>;
   }
-
-  return isAuthenticated ? element : <Navigate to="/login" replace/>
-}
+  return isAuth ? element : <Navigate to="/login" replace />;
+};
 
 const App: FC = () => {
-  
+  const { isAuth, loading } = useAuth();
+
   return (
     <div className="app-container">
       <Navbar />
-        <Routes>
-          {/* 🔹 TODAS las rutas que deben mostrar el Navbar usan MainLayout */}
-          
-          <Route>
-            <Route index element={<Landing />} /> {/* "/" */}
-            <Route path="about" element={<AboutUs />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/sitemap" element={<Sitemap />} />
-            <Route path="dashboard" element={<ProtectedRoute element={<Home />} />} />
-          </Route>
-          {/* 🔹 Redirección por defecto */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <Footer />
+
+      <Routes>
+        {/* "/" debe decidirse una vez que sepamos isAuth */}
+        <Route
+          index
+          element={
+            loading || isAuth === null
+              ? <div style={{ padding: 16 }}>Cargando sesión...</div>
+              : isAuth
+                ? <Navigate to="/home" replace />
+                : <Landing />
+          }
+        />
+
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/sitemap" element={<Sitemap />} />
+
+        {/* Auth públicas */}
+        <Route path="/login" element={isAuth ? <Navigate to="/home" replace /> : <Login />} />
+        <Route path="/signup" element={isAuth ? <Navigate to="/home" replace /> : <Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Protegidas */}
+        <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
+        <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      <Footer />
     </div>
   );
 };

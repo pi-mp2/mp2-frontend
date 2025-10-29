@@ -1,126 +1,138 @@
 .navbar {
-  background: #1a1a1a;
-  color: white;
-  padding: 0.5rem 1.5rem;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 50;
+  background: #0b1220;
+  border-bottom: 1px solid #1e293b;
+  color: #e5e7eb;
 
   &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.6rem 1rem;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
+ gap: .75rem;
   }
 
-  .navbar__brand {
+  &__left {
     display: flex;
     align-items: center;
+    gap: .75rem;
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
     text-decoration: none;
-    color: #ff4444;
-    font-weight: bold;
-    font-size: 1.3rem;
+    color: inherit;
+    font-weight: 700;
 
-    .brand__logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      object-fit: cover; /* 🔹 evita deformaciones en la imagen */
-      background: #b1000a;
-    }
-
-    .brand__name {
-      color: #fff;
-    }
+    img { width: 28px; height: 28px; border-radius: .5rem; object-fit: cover; }
   }
 
-  .navbar__links {
+  &__burger {
+    display: none;
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: .5rem;
+    padding: .4rem .55rem;
+    color: #e5e7eb;
+  }
+
+  &__links {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: .4rem;
 
-    a,
-    .logout-btn {
-      text-decoration: none;
-      color: #fff;
-      font-weight: 500;
-      transition: color 0.2s ease;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    a:hover,
-    .logout-btn:hover {
-      color: #ff4444;
-    }
-
-    .navlink--outlined {
-      border: 1px solid #ff4444;
-      padding: 0.3rem 0.7rem;
-      border-radius: 6px;
-
-      &:hover {
-        background: #ff4444;
-        color: #fff;
-      }
-    }
+    &.is-open { display: block; }
   }
 
-  /* Botón hamburguesa */
-  .navbar__toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 28px;
-    height: 22px;
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+}
+
+.navlink {
+  padding: .45rem .7rem;
+  border-radius: .6rem;
+  text-decoration: none;
+  color: #e5e7eb;
+  border: 1px solid transparent;
+
+  &.active { background: #0f172a; border-color: #1f2937; }
+  &:hover { background: #0f172a; border-color: #334155; }
+}
+
+/* Perfil / avatar */
+.profile {
+  position: relative;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .35rem .55rem;
+    border-radius: .75rem;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #e5e7eb;
+  }
+
+  .avatar {
+    width: 26px; height: 26px;
+    border-radius: 9999px;
+    display: grid; place-items: center;
+    font-size: .8rem; font-weight: 700;
+    background: #1f2937;
+  }
+
+  &__name { font-size: .9rem; }
+  .chev { opacity: .8; }
+
+  &__menu {
+    position: absolute;
+    right: 0;
+    margin-top: .4rem;
+    background: #0b1220;
+    border: 1px solid #1e293b;
+    border-radius: .75rem;
+    min-width: 180px;
+    padding: .3rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  &__item {
+    width: 100%;
+    display: block;
+    text-align: left;
+    padding: .55rem .7rem;
+    border-radius: .6rem;
+    color: #e5e7eb;
+    text-decoration: none;
+    border: 1px solid transparent;
     background: transparent;
-    border: none;
-    cursor: pointer;
 
-    .bar {
-      height: 3px;
-      width: 100%;
-      background-color: white;
-      border-radius: 3px;
-      transition: all 0.3s;
-    }
-
-    &.active .bar:nth-child(1) {
-      transform: rotate(45deg) translateY(8px);
-    }
-    &.active .bar:nth-child(2) {
-      opacity: 0;
-    }
-    &.active .bar:nth-child(3) {
-      transform: rotate(-45deg) translateY(-8px);
-    }
+    &:hover { background: #0f172a; border-color: #334155; }
   }
 
-  /* ✅ Responsive */
-  @media (max-width: 768px) {
-    .navbar__toggle {
-      display: flex;
-    }
+  &__logout { color: #fca5a5; }
+}
 
-    .navbar__links {
-      position: absolute;
-      top: 60px;
-      left: 0;
-      right: 0;
-      flex-direction: column;
-      align-items: center;
-      background: #222;
-      padding: 1rem 0;
-      transform: translateY(-100%);
-      opacity: 0;
-      transition: all 0.3s ease-in-out;
-      gap: 1rem;
-    }
-
-    .navbar__links.open {
-      transform: translateY(0);
-      opacity: 1;
-    }
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar__burger { display: inline-block; }
+  .navbar__links {
+    display: none;
+    position: absolute;
+    left: 0; right: 0; top: 56px;
+    padding: .5rem;
+    background: #0b1220;
+    border-bottom: 1px solid #1e293b;
+    > .navlink { display: block; }
   }
 }

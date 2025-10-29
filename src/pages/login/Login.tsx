@@ -1,44 +1,63 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../services/authService';
-import './Login.scss';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser, checkAuthStatus } from "../../services/authService";
+import { useAuth } from "../../contexts/authContext";
+import "./Login.scss";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
 
-    // Heurística 3: Prevención de errores → validación antes del envío
     if (!email || !password) {
-      setError('Por favor completa todos los campos.');
+      setError("Por favor completa todos los campos.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const result = await loginUser({ email, password });
+      // 1) Login
+      const resp = await loginUser({ email, password });
+      console.log("Login response:", resp);
 
-      if (result.data?.token) {
-        // Heurística 1: Visibilidad del estado del sistema → muestra mensaje al iniciar sesión
-        setMessage('Inicio de sesión exitoso. Redirigiendo...');
-        setTimeout(() => {
-          navigate('/home');
-        }, 1500);
+      // 2) Intentar extraer token/user de la respuesta
+      const token =
+        resp?.data?.token ?? resp?.token ?? resp?.accessToken ?? null;
+      const user =
+        resp?.data?.user ?? resp?.user ?? null;
+
+      if (token || user) {
+        // ✅ Backend devuelve token y/o user en el login
+        login({ token: token ?? undefined, user: user ?? undefined });
       } else {
-        setError('Credenciales inválidas. Intenta de nuevo.');
+        // ✅ Backend NO devuelve datos; usa cookie httpOnly -> verificar sesión
+        const verify = await checkAuthStatus(); // GET /auth/verify (con credenciales)
+        const vToken =
+          verify?.data?.token ?? verify?.token ?? null;
+        const vUser =
+          verify?.data?.user ?? verify?.user ?? null;
+
+        if (!vUser && !vToken) {
+          throw new Error("No se pudo validar la sesión después de iniciar.");
+        }
+        login({ token: vToken ?? undefined, user: vUser ?? undefined });
       }
+
+      setMessage("Inicio de sesión exitoso. Redirigiendo...");
+      navigate("/home", { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
+      setError(err?.message || "Error al iniciar sesión.");
     } finally {
       setLoading(false);
     }
@@ -49,7 +68,6 @@ const Login: React.FC = () => {
       <div className="login-container">
         <h2>Iniciar sesión</h2>
 
-        {/* Heurística 6: Reconocer antes que recordar → placeholders claros */}
         <form onSubmit={handleSubmit} className="login-form" autoComplete="off" aria-label="Formulario de inicio de sesión">
           <input
             type="email"
@@ -66,12 +84,11 @@ const Login: React.FC = () => {
             required
           />
 
-          {/* Heurística 2: Control y libertad del usuario → opción de recuperar cuenta */}
           <div className="login-extras">
             <button
               type="button"
               className="link-button"
-              onClick={() => navigate('/forgot-password')}
+              onClick={() => navigate("/forgot-password")}
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -81,18 +98,16 @@ const Login: React.FC = () => {
             {loading ? "Cargando..." : "Ingresar"}
           </button>
 
-          {/* Heurística 1: Visibilidad del estado → mensajes claros */}
           {error && <p className="error-message">{error}</p>}
           {message && <p className="success-message">{message}</p>}
         </form>
 
-        {/* Heurística 4: Consistencia → botones y enlaces similares */}
         <p className="signup-redirect">
-          ¿No tienes una cuenta?{' '}
+          ¿No tienes una cuenta?{" "}
           <button
             type="button"
             className="link-button"
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate("/signup")}
           >
             Regístrate
           </button>
