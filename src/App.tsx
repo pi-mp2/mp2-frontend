@@ -2,7 +2,6 @@ import type { FC, JSX } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/authContext";
 
-// Páginas
 import Home from "./pages/home/Home";
 import AboutUs from "./pages/about/AboutUs";
 import Login from "./pages/login/Login";
@@ -13,18 +12,13 @@ import ResetPassword from "./pages/change-password/ResetPassword";
 import ForgotPassword from "./pages/change-password/ForgotPassword";
 import Landing from "./pages/landing/Landing";
 
-// Comunes
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
 import "./App.scss";
 
-interface ProtectedRouteProps { element: JSX.Element; }
-const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
+const ProtectedRoute: FC<{ element: JSX.Element }> = ({ element }) => {
   const { isAuth, loading } = useAuth();
-  if (loading || isAuth === null) {
-    return <div style={{ padding: 16 }}>Cargando sesión...</div>;
-  }
+  if (loading || isAuth === undefined) return <div style={{ padding: 16 }}>Cargando sesión…</div>;
   return isAuth ? element : <Navigate to="/login" replace />;
 };
 
@@ -34,37 +28,36 @@ const App: FC = () => {
   return (
     <div className="app-container">
       <Navbar />
-
       <Routes>
-        {/* "/" debe decidirse una vez que sepamos isAuth */}
+        {/* Raíz: mientras carga, no decidas; luego, redirige si está logeado */}
         <Route
           index
           element={
-            loading || isAuth === null
-              ? <div style={{ padding: 16 }}>Cargando sesión...</div>
-              : isAuth
-                ? <Navigate to="/home" replace />
-                : <Landing />
+            loading ? (
+              <div style={{ padding: 16 }}>Cargando sesión…</div>
+            ) : isAuth ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <Landing />
+            )
           }
         />
 
+        {/* públicas */}
         <Route path="/about" element={<AboutUs />} />
         <Route path="/sitemap" element={<Sitemap />} />
-
-        {/* Auth públicas */}
         <Route path="/login" element={isAuth ? <Navigate to="/home" replace /> : <Login />} />
-        <Route path="/signup" element={isAuth ? <Navigate to="/home" replace /> : <Signup />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Protegidas */}
+        {/* protegidas */}
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
 
-        {/* Fallback */}
+        {/* fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-
       <Footer />
     </div>
   );

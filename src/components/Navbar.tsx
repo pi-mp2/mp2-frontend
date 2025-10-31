@@ -8,18 +8,16 @@ const cls = (...c: Array<string | false | undefined>) => c.filter(Boolean).join(
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { user, logout, isAuth, loading } = useAuth();
+  const { user, logout, isAuth } = useAuth();
 
   const [openMobile, setOpenMobile] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setOpenProfile(false);
-      }
-    }
+    const onClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setOpenProfile(false);
+    };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
@@ -45,7 +43,7 @@ export default function Navbar() {
               Home
             </NavLink>
 
-            {!loading && !isAuth && (
+            {!isAuth && (
               <>
                 <NavLink to="/login" className="navlink" onClick={() => setOpenMobile(false)}>
                   Iniciar sesión
@@ -56,7 +54,7 @@ export default function Navbar() {
               </>
             )}
 
-            {!loading && isAuth && (
+            {isAuth && (
               <NavLink to="/profile" className="navlink" onClick={() => setOpenMobile(false)}>
                 Perfil
               </NavLink>
@@ -65,7 +63,7 @@ export default function Navbar() {
         </div>
 
         <div className="navbar__right">
-          {!loading && isAuth ? (
+          {isAuth ? (
             <div className="profile" ref={profileRef}>
               <button
                 className="profile__btn"

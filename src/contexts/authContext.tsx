@@ -3,24 +3,27 @@ import axiosClient from "../services/axiosClient";
 
 type User = {
   id?: string;
+  _id?: string;
+  email?: string;
   username?: string;
   name?: string;
-  email?: string;
+  [k: string]: any;
 };
 
 type AuthContextType = {
   user: User | null;
-  isAuth: boolean | null; // null = no verificado aún
+  isAuth: boolean | undefined; // undefined mientras carga
   loading: boolean;
-  login: (payload: { email: string; password: string }) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  isAuth: null,
+  isAuth: undefined,
   loading: true,
+  // stubs
   login: async () => {},
   logout: async () => {},
   refresh: async () => {},
@@ -28,64 +31,71 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+  const [isAuth, setIsAuth] = useState<boolean | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
-  // 🔍 Verificar sesión al cargar la app
-  useEffect(() => {
-    const verify = async () => {
-      try {
-        const { data } = await axiosClient.get("/auth/verify");
-        console.log("✅ Verificación exitosa:", data);
-        setUser(data?.user ?? null);
-        setIsAuth(true);
-      } catch (error: any) {
-        console.warn("❌ No autenticado:", error.response?.status);
-        setUser(null);
-        setIsAuth(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-    verify();
-  }, []);
-
-  // 🔐 Iniciar sesión
-  const login: AuthContextType["login"] = async ({ email, password }) => {
-    setLoading(true);
+  const refresh = async () => {
     try {
-      const { data } = await axiosClient.post("/auth/login", { email, password });
-      setUser(data?.user ?? null);
+      const { data } = await axiosClient.get("/auth/verify");
+      // Si tu backend devuelve {user} o {data:{user}} ajusta aquí:
+      const u = data?.user ?? data?.data?.user ?? data;
+      setUser(u || null);
       setIsAuth(true);
-    } catch (error) {
+    } catch (err: any) {
+      // 401 => no autenticado
+      setUser(null);
       setIsAuth(false);
-      throw error;
-    } finally {
-      setLoading(false);
+      // Limpia cualquier token local por si acaso
+      localStorage.removeItem("token");
     }
   };
 
-  // 🚪 Cerrar sesión
-  const logout: AuthContextType["logout"] = async () => {
+  const login = async (email: string, password: string) => {
+    // IMPORTANTÍSIMO: coincide con el contrato del backend.
+    // Si tu backend espera "correo" en vez de "email", cambia la clave.
     try {
-      await axiosClient.post("/auth/logout");
-    } catch {}
-    localStorage.removeItem("token");
-    setUser(null);
-    setIsAuth(false);
+      const { data } = await axiosClient.post("/auth/login", { email, password });
+      // Si tu backend devuelve token en data.token, guarda (opcional):
+      const token = data?.token ?? data?.data?.token;
+      if (token) localStorage.setItem("token", token);
+
+      // Establece user directo si viene en la respuesta, si no, pregunta a /verify
+      const u = data?.user ?? data?.data?.user;
+      if (u) {
+        setUser(u);
+        setIsAuth(true);
+      } else {
+        await refresh();
+      }
+    } catch (err: any) {
+      // Propaga mensaje útil
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "No se pudo iniciar sesión.";
+      throw new Error(msg);
+    }
   };
 
-  // 🔄 Refrescar sesión
-  const refresh: AuthContextType["refresh"] = async () => {
+  const logout = async () => {
     try {
-      const { data } = await axiosClient.get("/auth/verify");
-      setUser(data?.user ?? null);
-      setIsAuth(true);
+      await axiosClient.post("/auth/logout");
     } catch {
+      // aunque falle, limpia local
+    } finally {
+      localStorage.removeItem("token");
       setUser(null);
       setIsAuth(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await refresh();
+      setLoading(false);
+    })();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, isAuth, loading, login, logout, refresh }}>
